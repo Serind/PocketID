@@ -1,5 +1,5 @@
 ## Version
-Android -> v0.1.1
+Android -> v0.1.3
 
 ## Getting Started
 
