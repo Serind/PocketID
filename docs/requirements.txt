@@ -1,1 +1,1 @@
-sudo pip3 install mkdocs-bootstrap
+mkdocs-bootstrap
