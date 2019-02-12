@@ -3,7 +3,7 @@ Android -> v0.1.3
 
 ## Getting Started
 
-Start by downloading the client SDK from the website.
+Start by downloading the client [SDK](https://pocketidapp.com/#developersSection).
 
 Once you have the client SDK, you’re ready to integrate it with your app.
 
@@ -65,8 +65,8 @@ public class SampleActivity extends Activity implements PocketIDListener {
     public void onEvent(String event, Bundle data) {
         switch (event)  {
             case EventType.EVENT_LOGIN_SUCCESS:
-                     // code
-                    break;
+                 // code
+                break;
         }
     }
     
@@ -93,12 +93,31 @@ public class TestdApp extends Application {
     public void onCreate() {
         super.onCreate();
         PocketIDSdk.getInstance().customize()
-                    .setLogLevel(LogLevel.VERBOSE)
-                    .setTheme(PocketIDTheme.LIGHT);
+                    .setLogo(R.drawable.logo);
     }
 }
 ```
+
 <br>
+
+## Theme
+
+As part of the customization, the SDK comes built-in with 2 standard themes.
+With clean and modern design, along with a `LIGHT` and `DARK` theme, the SDK will blend in with your (d)App perfectly.
+
+```java 
+public class TestdApp extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PocketIDSdk.getInstance().customize()
+                    .setTheme(PocketIDTheme.DARK);
+    }
+}
+```
+
+> Note the default theme is `LIGHT`
 
 ## Login/Registration (Button)
 
@@ -133,13 +152,13 @@ Pass `true` for `defaultToRegister` if you want the initial screen to default to
 
 After login, the SDK will broadcast the following events:
 
-* EVENT_LOGIN_SUCCESS
-* EVENT_LOGIN_FAILED
+* `EVENT_LOGIN_SUCCESS`
+* `EVENT_LOGIN_FAILED`
 	
 After registration, the SDK will broadcast the following:
 
-* EVENT_ACCOUNT_REGISTERED
-* EVENT_ACCOUNT_REGISTER_FAILED
+* `EVENT_ACCOUNT_REGISTERED`
+* `EVENT_ACCOUNT_REGISTER_FAILED`
 
 <br>
 
@@ -161,7 +180,7 @@ public class MyActivity extends Activity {
 ## SSO (single sign-on)
 
 Just like the major single sign-on platforms such as Facebook and Google, our login/onboarding process is meant to make it very easy and convenient for users to login to your app. 
-The great aspect of SSO is that the user don’t have to re-login to your app every time and as a side benefit, user’s don’t need to login to other apps that support PocketID as well. 
+The great aspect of SSO is that the user don’t have to re-login to your app every time. 
 This creates a level of comfort for users and will create a sphere of convenience. 
 As a developer, you don’t have to do anything extra to enable this feature, it works by default on the respective platform.
 
@@ -177,7 +196,7 @@ This will clear the session from the sdk and `PocketIDSdk.getInstance().requires
 
 The SDK will broadcast the following events:
 
-* EVENT_LOGGED_OUT
+* `EVENT_LOGGED_OUT`
 
 <br>
 
@@ -191,8 +210,8 @@ This flow is built-in to the login process therefore the developer don’t have 
 
 After login, the SDK will broadcast the following events:
 
-* EVENT_LOGIN_SUCCESS
-* EVENT_LOGIN_FAILED
+* `EVENT_LOGIN_SUCCESS`
+* `EVENT_LOGIN_FAILED`
 
 <br>
 
@@ -212,7 +231,8 @@ Customize the SDK features
 
 * `setTheme(theme)`
 * `setLogo(logo)`
-* `setLogLevel(level)`
+* `setShowLoginBackButton(show)`**\*\*New**
+* `setShowRegisterBackButton(show)`**\*\*New**
 
 <br>
 
@@ -244,6 +264,8 @@ Main interactions with the sdk is through this class. Used as Singleton.
     * True or False
 * `customize()`
     * Customize the SDK
+* `defaults()`**\*\*New**
+    * Load to default state of SDK
 * `registerListener(PocketIDListener)`
     * Registers a global event listener
 * `unregisterListener(PocketIDListener)`
@@ -253,14 +275,33 @@ Main interactions with the sdk is through this class. Used as Singleton.
     * defaultToRegister will start with the registration screen instead of login screen
 * `logout(context)`
     * Logs out the current user and clears the global session
-* `getUser()`
+* `getUser()`**\*\*New**
     * Returns: user details
 
 <br>
 
+#### User
+
+Class represents the user's data.
+**\*\*New**
+
+* `getFirstName()`
+    * User's first name
+* `getLastName()`
+    * User's last name
+* `getUsername()`
+    * User's username
+* `getCountryCode()`
+    * User's phone country code
+* `getPhoneNumber()`
+    * User's phone number
+* `getEmail()`
+    * User's email address
+    
+
 #### EventType
 
-Contains all the event type that are sent to `PocketIDListener`
+Contains all the type that are sent to `PocketIDListener`
 
 * `EVENT_LOGIN_SUCCESS`
 * `EVENT_LOGIN_FAILED`
