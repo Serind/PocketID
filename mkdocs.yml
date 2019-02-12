@@ -5,5 +5,5 @@ pages:
   - Home: index.md
   - Android:
     - Latest: android/index.md
-    - v0.1.1: android/index.md
+    - v0.1.1: android/v0.1.1.md
 
