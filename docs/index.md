@@ -6,6 +6,6 @@ PocketID is a quick and seamless solution to jump start your blockchain applicat
 
 To begin, please choose which platform you'd like to work with:
 
-[Android](../android)
+[Android](./android)
 
 iOS
