@@ -1,6 +1,6 @@
 site_name: PocketID
 theme:
-  name: bootstrap
+  name: readthedocs
 nav:
   - 'Home': 'index.md'
   - 'Android':
