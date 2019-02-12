@@ -2,8 +2,8 @@ site_name: PocketID
 theme:
   name: readthedocs
 pages:
-  - 'Home': 'index.md'
-  - 'Android':
-    - 'Latest': 'android/index.md'
-    - 'v0.1.1': 'android/index.md'
+  - Home: index.md
+  - Android:
+    - Latest: android/index.md
+    - v0.1.1: android/index.md
 
