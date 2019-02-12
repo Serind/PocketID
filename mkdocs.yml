@@ -1,7 +1,7 @@
 site_name: PocketID
 theme:
   name: readthedocs
-pages:
+nav:
   - Home: index.md
   - Android:
     - Latest: android/index.md
