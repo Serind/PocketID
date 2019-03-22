@@ -217,8 +217,6 @@ Regardless of which approach taken there's 2 ways to handle the results of the `
         }
         
     
-    **\*\*Recommended** if the logic of the d(App) is to continue to the next screen after successful login
-
     This is the assured way of knowing when the user is fully authenticated and that the sdk
     has finished the flow and given the results back to the calling (d)App.
     
