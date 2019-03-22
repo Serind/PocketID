@@ -6,7 +6,7 @@ Android -> v1.0
 
 Start by downloading the client [SDK](https://pocketidapp.com/#developersSection).
 
-Once you have the client SDK, you’re ready to integrate it with your app.
+Once you have the client SDK, you’re ready to integrate it with your (d)App.
 
 1. Add the `pocketid-sdk-release.aar` file to your project’s `/libs` folder 
 1. Update your project dependencies to import the sdk
@@ -55,46 +55,137 @@ public class TestdApp extends Application {
 <br>
 
 ---
-## Quick Guide
-
-
-### Login
-
-dsfkajf;d
-
-### Buy
-
-akjdfadf
-
-### Send
-
-akldfj;adfj
-
----
-## Advanced Guide
-
-
-### Authentication 
+## Basic Guide
 
 PocketID integration makes it very simple for your users to adopt blockchain without having the need or the pressure to fully understand it. 
 Your users will appreciate when your onboarding process is similar to what they are already used to, ie username and password. 
+In addition, PocketID SDK will allow (d)Apps to make crypto transactions. Logged-in users can `buy` with their credit card and `send` tokens to other PocketID users simply by their username.
+
+<br>
+
+### Login
+
+Add the `PocketIDButton` to your activity's layout file.
+```xml 
+<com.serindlabs.pocketid.sdk.widget.PocketIDButton
+    android:id="@+id/btnLogin" 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+```
+
+Override `onActivityResult()` in your activity and handle the successfully logged-in user.
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (requestCode == PocketIDRequestCode.AUTHENTICATION && resultCode == RESULT_OK) {
+        // code here
+    } else {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+}
+```
+> `PocketIDSdk.getInstance().requiresLogin()` can be used to show or hide the login button</br>
+
+> Prerequisites:</br>
+> - [Getting Started](#getting-started)</br>
+> - [Initialization](#initialization)
+
+
+
+### Buy
+
+To trigger the `buy` token flow:
+
+```java
+@Override
+protected void onClick(View v) {
+    PocketIDSdk.getInstance().buyToken(this);
+}
+```
+
+Override `onActivityResult()` in your activity and handle the `buy` result.
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (requestCode == PocketIDRequestCode.BUY_TOKEN && resultCode == RESULT_OK) {
+        // code here
+    } else {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+}
+```
+
+> Prerequisites:</br>
+> User needs to be logged in
+
+### Send
+
+To trigger the `send` token flow:
+
+```java
+@Override
+protected void onClick(View v) {
+    PocketIDSdk.getInstance().sendToken(this);
+}
+```
+
+Override `onActivityResult()` in your activity and handle the `send` result.
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (requestCode == PocketIDRequestCode.SEND_TOKEN && resultCode == RESULT_OK) {
+        // code here
+    } else {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+}
+```
+
+> Prerequisites:</br>
+> User needs to be logged in
 
 </br>
 
-**Easy Approach**
+---
+##Events
 
-The easiest and recommended way to initiate the `authentication` process is through our dedicated ‘Login with PocketID’ button. This is a great way to onboard both users who are new to your (d)App or users who may already have a PocketID account. All that’s needed is to add to your Android layout.
+Most of the SDK functionality will have associated events that will be broadcast to notify of progress and result. 
+To listen for these events, you may implement the `PocketIDListener` and pass it to `PocketIDSdk.getInstance().registerListener(PocketIDListener)`. 
 
-```xml 
-<com.serindlabs.pocketid.sdk.widget.PocketIDButton
-   	android:layout_width="wrap_content"
-  	android:layout_height="wrap_content" />
+In order to stop receiving the events, you can pass the same instance of your `PocketIDListener` to `PocketIDSdk.getInstance().unregisterListener(PocketIDListener)`.
+
+```java 
+public class SampleActivity extends Activity implements PocketIDListener {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PocketIDSdk.getInstance().registerListener(this);
+    }
+    
+    @Override
+    public void onEvent(String event, Bundle data) {
+        switch (event)  {
+            case EventType.EVENT_LOGIN_SUCCESS:
+                 // code
+                break;
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        PocketIDSdk.getInstance().unregisterListener(this);
+        super.onDestroy();
+    }
+}
 ```
+
 <br>
 
-**Manual Approach**
+## Authentication 
 
-To manually trigger the `authentication` flow, all that is needed is to call `PocketIDSdk.getInstance().login()` and our client sdk will handle all the detailed work needed to generate an account.
+If you'd like more control over when to trigger the authentication flow instead of using the ['Login with PocketID'](#login) button, 
+all that is needed is to call `PocketIDSdk.getInstance().login()` and our client sdk will handle all the detailed work needed to generate an account.
 
 ```java 
 public class MyActivity extends Activity {
@@ -112,7 +203,6 @@ Pass `true` for `defaultToRegister` if you want the initial screen to default to
 
 **Handling Result**
 
-
 Regardless of which approach taken there's 2 ways to handle the results of the `authentication` flow:
 
 1. using `onActivityResult()` 
@@ -126,9 +216,6 @@ Regardless of which approach taken there's 2 ways to handle the results of the `
             }
         }
         
-
-    > `requestCode` is `PocketIDRequestCode.AUTHENTICATION`<br/>
-    > `resultCode` is `Activity.RESULT_OK` or `Activity.RESULT_CANCEL`
     
     **\*\*Recommended** if the logic of the d(App) is to continue to the next screen after successful login
 
@@ -164,7 +251,7 @@ Regardless of which approach taken there's 2 ways to handle the results of the `
 
     > Please see how to implement global [Event listener](#events)
 
-**User**
+##User
 
 After the user has logged in, you can get the account detail by calling `PocketIDSdk.getInstance().getUser()` which will return a `User` object. 
    
@@ -177,16 +264,20 @@ public class MyActivity extends Activity {
     }
 }
 ```
+
+> Prerequisite:<br/>
+> User must be logged-in or will return `null`
+
 <br>
 
 
-**Logout**
+##Logout
 
 The logged-in user will have a stored session in the client sdk.
 In order to log the user out, just call `PocketIDSdk.getInstance().logout()`.
 This will clear the session from the sdk and `PocketIDSdk.getInstance().requiresLogin()` will return `true`. 
 
-> Note that if the user is not logged in, `PocketIDSdk.getInstance().getUser()` will return `null`.
+> The `PocketIDSdk.getInstance().getUser()` will return `null`.
 
 The SDK will broadcast the following events:
 
@@ -194,13 +285,13 @@ The SDK will broadcast the following events:
 
 <br>
 
-**Forgot Password**
+##Forgot Password
 
 PocketID client sdk’s onboarding process comes built-in with forgot and reset password feature. 
 This process have been simplified and is very seamless as the user will not have to go outside of the app at all to reset their password. 
 This flow is built-in to the login process therefore the developer don’t have to do anything extra to support this feature. 
 
-> Note that the end result of forgot/reset password will be a logged-in user after successful reset.
+> The end result of forgot/reset password will be a logged-in user after successful reset.
 
 After login, the SDK will broadcast the following events:
 
@@ -209,41 +300,83 @@ After login, the SDK will broadcast the following events:
 
 <br>
 
-**Events**
+##Balance
 
-Most of the SDK functionality will have associated events that will be broadcast to notify of progress and result. 
-To listen for these events, you may implement the `PocketIDListener` and pass it to `PocketIDSdk.getInstance().registerListener(PocketIDListener)`. 
-In order to stop receiving the events, you can pass the same instance of your `PocketIDListener` to `PocketIDSdk.getInstance().unregisterListener(PocketIDListener)`.
-
+PocketID SDK provides access to a logged-in user's account balance.
+  
 ```java 
-public class SampleActivity extends Activity implements PocketIDListener {
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        PocketIDSdk.getInstance().registerListener(this);
-    }
-    
-    @Override
-    public void onEvent(String event, Bundle data) {
-        switch (event)  {
-            case EventType.EVENT_LOGIN_SUCCESS:
-                 // code
-                break;
+        if (PocketIDSdk.getInstance().getBalance() == null) {
+            PocketIDSdk.getInstance().fetchBalance();
+        } else {
+            BalanceResponse balanceRsp = PocketIDSdk.getInstance().getBalance();
         }
     }
     
     @Override
-    protected void onDestroy() {
-        PocketIDSdk.getInstance().unregisterListener(this);
-        super.onDestroy();
+    public void onEvent(String event, Bundle bundle) {
+        switch (event) {
+            case PocketIDEventType.EVENT_GET_BALANCE_SUCCESS:
+                BalanceResponse balanceRsp = PocketIDSdk.getInstance().getBalance();
+                break;
+            case PocketIDEventType.EVENT_GET_BALANCE_FAILED:
+                // show error
+                break;
+        }
     }
-}
 ```
+
+Fetch Balance will broadcast the following events:
+
+* `EVENT_GET_BALANCE_SUCCESS`
+* `EVENT_GET_BALANCE_FAILED`
+
+> Prerequisite:<br/>
+> User must be logged-in<br/>
+> Global [Event listener](#events)
 
 <br>
 
-### Customization
+##Transactions
+
+PocketID SDK provides access to a logged-in user's transactions.
+  
+```java 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (PocketIDSdk.getInstance().getTransactions() == null) {
+            PocketIDSdk.getInstance().fetchTransactions();
+        } else {
+            TransactionsResponse transactionsRsp = PocketIDSdk.getInstance().getTransactions();
+        }
+    }
+    
+    @Override
+    public void onEvent(String event, Bundle bundle) {
+        switch (event) {
+            case PocketIDEventType.EVENT_GET_TRANSACTIONS_SUCCESS:
+                TransactionsResponse transactionsRsp = PocketIDSdk.getInstance().getTransactions();
+                break;
+            case PocketIDEventType.EVENT_GET_TRANSACTIONS_FAILED:
+                // show error
+                break;
+        }
+    }
+```
+
+Fetch Transactions will broadcast the following events:
+
+* `EVENT_GET_TRANSACTIONS_SUCCESS`
+* `EVENT_GET_TRANSACTIONS_FAILED`
+
+> Prerequisite:<br/>
+> User must be logged-in<br/>
+> Global [Event listener](#events)
+
+<br>
+
+##Customization
    
 We understand every application is unique with it’s own design and functional needs. PocketID sdk provides the necessary tools for customization for the respective platforms. 
 On Android, `Customize` is the main source of sdk customization. You can get a reference to it by calling `PocketIDSdk.getInstance().customize()`. 
@@ -264,7 +397,7 @@ public class TestdApp extends Application {
 
 <br>
 
-### Theme
+##Theme
 
 As part of the customization, the SDK comes built-in with 2 standard themes.
 With clean and modern design, along with a `LIGHT` and `DARK` theme, the SDK will blend in with your (d)App perfectly.
@@ -281,20 +414,10 @@ public class TestdApp extends Application {
 }
 ```
 
-> Note the `DARK` theme is only supported for `authentication` flows at the moment. 
-
-
-### SSO (single sign-on)
-
-Just like the major single sign-on platforms such as Facebook and Google, our login/onboarding process is meant to make it very easy and convenient for users to login to your app. 
-The great aspect of SSO is that the user don’t have to re-login to your app every time. 
-This creates a level of comfort for users and will create a sphere of convenience. 
-As a developer, you don’t have to do anything extra to enable this feature, it works by default on the respective platform.
-
-<br>
+> The `DARK` theme is only supported for `authentication` flows at the moment. 
 
 ---
-## Reference
+##Reference
 
 <br>
 #### PocketIDButton
@@ -353,20 +476,31 @@ Main interactions with the sdk is through this class. Used as Singleton.
     * Registers a global event listener
 * `unregisterListener(PocketIDListener)`
     * Unregisters the global event listener
-* `login(context, defaultToRegister)`
+* `login(fragment/activity, defaultToRegister)`
     * Manually triggers the Login Flow
     * defaultToRegister will start with the registration screen instead of login screen
+* `buy(fragment/activity)`**\*\*New**
+    * Triggers the `buy` token flow
+* `send(fragment/activity)`**\*\*New**
+    * Triggers the `send` token flow
 * `logout(context)`
     * Logs out the current user and clears the global session
-* `getUser()`**\*\*New**
+* `getUser()`
     * Returns: user details
+* `fetchBalance()`**\*\*New**
+    * Load the balance response
+* `getBalance()`**\*\*New**
+    * returns `BalanceResponse`
+* `fetchTransactions()`**\*\*New**
+    * Load the transactions response
+* `getTransactions()`**\*\*New**
+    * returns `TransactionsResponse`
 
 <br>
 
 #### User
 
 Class represents the user's data.
-**\*\*New**
 
 * `getFirstName()`
     * User's first name
@@ -381,8 +515,9 @@ Class represents the user's data.
 * `getEmail()`
     * User's email address
     
+<br>
 
-#### EventType
+#### PocketIDEventType (formerly EventType)
 
 Contains all the type that are sent to `PocketIDListener`
 
@@ -391,8 +526,51 @@ Contains all the type that are sent to `PocketIDListener`
 * `EVENT_ACCOUNT_REGISTERED`
 * `EVENT_REGISTER_FAILED`
 * `EVENT_LOGGED_OUT`
+* `EVENT_GET_BALANCE_SUCCESS`**\*\*New**
+* `EVENT_GET_BALANCE_FAILED`**\*\*New**
+* `EVENT_SEND_SUCCESS`**\*\*New**
+* `EVENT_SEND_CANCELLED`**\*\*New**
+* `EVENT_BUY_SUCCESS`**\*\*New**
+* `EVENT_BUY_CANCELLED`**\*\*New**
+* `EVENT_GET_TRANSACTIONS_SUCCESS`**\*\*New**
+* `EVENT_GET_TRANSACTIONS_FAILED`**\*\*New**
+
+<br>
+
+#### PocketIDUiUtil
+
+SDK UI Utility class **\*\*New**
+
+* static `formatFiatString(amount)`
+    * formats a fiat currency string according to sdk settings
+* static `formatTokenString(amount)`
+    * formats a token string according to sdk settings
+    
+<br>
+
+#### BalanceResponse
+
+Class represents user's balance data **\*\*New**
+
+* `getDefaultWalletId()`
+    * Returns the id of the default wallet
+* `getDefaultWallet()`
+    * Returns the user's default `Wallet` object
+* `getAllWallets()`
+    * Returns all the user's `Wallet` accounts.
+    
+<br>
+
+#### TransactionsResponse
+
+Class represents user's transaction data **\*\*New**
+
+* `getTransactions()`
+    * Returns a list of `Transaction`
+    
+<br>
 
 ---
-## Coming Soon
+##Coming Soon
 - The sdk will be hosted in Maven Repository<br/>
 - `DARK` theme support for `buy` and `send` flows
