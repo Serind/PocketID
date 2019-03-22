@@ -4,11 +4,11 @@ Android -> v1.0
 ---
 ## Getting Started
 
-Start by downloading the client [SDK](https://pocketidapp.com/#developersSection).
+Start by downloading the client [SDK](https://github.com/Serind/pocketid-doc/releases/tag/v1.0) `.aar` file.
 
 Once you have the client SDK, you’re ready to integrate it with your (d)App.
 
-1. Add the `pocketid-sdk-release.aar` file to your project’s `/libs` folder 
+1. Add the `pocketid-sdk-release-l.0.aar` file to your project’s `/libs` folder 
 1. Update your project dependencies to import the sdk
     
     in your `app/build.gradle`, add the following under `dependencies {}`
