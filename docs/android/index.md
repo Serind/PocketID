@@ -8,12 +8,12 @@ Start by downloading the client [SDK](https://github.com/Serind/pocketid-doc/rel
 
 Once you have the client SDK, you’re ready to integrate it with your (d)App.
 
-1. Add the `pocketid-sdk-release-l.0.aar` file to your project’s `/libs` folder 
+1. Add the `pocketid-sdk-release-1.0.aar` file to your project’s `/libs` folder 
 1. Update your project dependencies to import the sdk
     
     in your `app/build.gradle`, add the following under `dependencies {}`
   
-        implementation(name : 'pocketid-sdk-release-l.0', ext : 'aar')
+        implementation(name : 'pocketid-sdk-release-1.0', ext : 'aar')
         implementation 'com.google.code.gson:gson:2.8.5'
         implementation 'com.squareup.retrofit2:retrofit:2.5.0'
         implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
