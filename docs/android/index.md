@@ -28,14 +28,12 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
     > <font color="red"><b>Upgrading?</b></font> please update your dependencies.<br/>
     
 1. Add `flatDir` to your `app/build.gradle`
-    
-    ```
+      
         repositories {
             flatDir {
                 dirs 'libs'
             }
-        }
-    ```
+        }    
 
 1. Sync your project with gradle
 <br>
