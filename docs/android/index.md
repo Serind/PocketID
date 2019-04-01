@@ -13,7 +13,7 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
     
     in your `app/build.gradle`, add the following under `dependencies {}`
   
-        implementation(name : ‘pocketid-sdk-release’, ext : ’aar’)
+        implementation(name : 'pocketid-sdk-release-l.0', ext : 'aar')
         implementation 'com.google.code.gson:gson:2.8.5'
         implementation 'com.squareup.retrofit2:retrofit:2.5.0'
         implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
@@ -27,8 +27,20 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
 
     > <font color="red"><b>Upgrading?</b></font> please update your dependencies.<br/>
     
+1. Add `flatDir` to your `app/build.gradle`
+    
+    ```
+        repositories {
+            flatDir {
+                dirs 'libs'
+            }
+        }
+    ```
+
 1. Sync your project with gradle
 <br>
+
+> If the above steps don't work for your project, follow the alternate [approach](https://developer.android.com/studio/projects/android-library#AddDependency) on how to import `.aar` files.
 
 ---
 ## Initialization
@@ -47,7 +59,7 @@ public class TestdApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        PocketIDSdk.getInstance().initialize(this, “nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)”);
+        PocketIDSdk.getInstance().initialize(this, "nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)");
     }
 }
 
