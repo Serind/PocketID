@@ -10,4 +10,4 @@ To begin, please choose which platform you'd like to work with:
 
 [Android](./android)
 
-iOS
+[iOS](./ios)
