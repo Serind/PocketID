@@ -1,6 +1,12 @@
 site_name: PocketID
 theme:
-  name: bootstrap
+  name: material
+  palette:
+    primary: 'cyan'
+    accent: 'indigo'
+  logo: 'assets/logo.png'
+  feature:
+    tabs: false
 pages:
   - Home: index.md
   - Android:
@@ -9,4 +15,11 @@ pages:
     - v0.1.1: android/v0.1.1.md
   - iOS:
     - Latest: ios/index.md
-
+repo_name: 'Serind/PocketID'
+repo_url: 'https://github.com/Serind/PocketID'
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
