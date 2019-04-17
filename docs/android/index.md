@@ -1,8 +1,8 @@
-## Version
+##Version
 Android -> v1.0
 
 ---
-## Getting Started
+##Getting Started
 
 Start by downloading the client [SDK](https://github.com/Serind/pocketid-doc/releases/tag/v1.0) `.aar` file.
 
@@ -41,7 +41,7 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
 > If the above steps don't work for your project, follow the alternate [approach](https://developer.android.com/studio/projects/android-library#AddDependency) on how to import `.aar` files.
 
 ---
-## Initialization
+##Initialization
 
 PocketID requires this mandatory step in order to initialize the sdk before any of its features to be consumed. 
 You will find the class `PocketIDSdk` is the main source of your interaction with the sdk. 
@@ -65,7 +65,7 @@ public class TestdApp extends Application {
 <br>
 
 ---
-## Basic Guide
+##Basic Guide
 
 PocketID integration makes it very simple for your users to adopt blockchain without having the need or the pressure to fully understand it. 
 Your users will appreciate when your onboarding process is similar to what they are already used to, ie username and password. 
@@ -73,7 +73,7 @@ In addition, PocketID SDK will allow (d)Apps to make crypto transactions. Logged
 
 <br>
 
-### Login
+###Login
 
 Add the `PocketIDButton` to your activity's layout file.
 ```xml 
@@ -102,7 +102,7 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 
 
 
-### Buy
+###Buy
 
 To trigger the `buy` token flow:
 
@@ -128,7 +128,7 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 > Prerequisites:</br>
 > User needs to be logged in
 
-### Send
+###Send
 
 To trigger the `send` token flow:
 
@@ -157,7 +157,154 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 </br>
 
 ---
-##Events
+
+##Smart Contracts
+
+PocketID provides the necessary interface to interact with Smart Contracts through the sdk. Please refer
+to this [document](https://learn.aion.network/docs/what-is-a-smart-contract) for more info.
+
+> All of the api in this section will broadcast the success/failure event along with extra data. 
+Check [Events](#events) on how to handle the response.
+
+<br>
+
+###Step 1: Initialize
+
+In order to make any smart contract requests, the `ContractHandler` must be initialized first.
+
+```java 
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .init("abi-here", "contract-address-here");
+}
+
+```
+
+###Step 2: Encode
+
+In this step, the `method` must be encoded along with it's parameters. The result of
+this request is an `encoded` representation of the `method`.
+
+```java 
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .encode(this, "setString", "abc");
+}
+
+```
+
+- the `method` name must be defined in the `abi` otherwise will result in error<br>
+- provide `params` as necessary (varargs) as defined in the `abi`<br>
+
+The SDK will broadcast the following events:
+
+* `EVENT_TR_ENCODE_SUCCESS`
+* `EVENT_TR_ENCODE_FAILED`
+
+> Use `PocketIDArgumentKey.KEY_ENCODED_DATA` to get the `encoded` call or
+use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+
+
+###Step 3.1: Write
+
+Now submit a `send` request using the `encoded-data` from [Step 1](#step-2-encode) to execute the method.
+
+```java 
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .send(this, encodedData); 
+}
+
+```
+
+The optional parameters of `gasPriceAion` and `gas` can be passed for convenience.
+Otherwise the following are the default values for network resources:
+
+> `gasPriceAion` = `0.00000001` (10 Amp) <br>
+> `gas` = 50000 <br>
+
+The SDK will broadcast the following events:
+
+* `EVENT_TR_SEND_SUCCESS`
+* `EVENT_TR_SEND_FAILED`
+
+> Use `PocketIDArgumentKey.KEY_TRANSACTION_HASH` to get the `transaction-hash` or
+use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+
+
+###Step 3.2: Read
+
+This request is used to read a smart contract and return the result.
+Before using the request, get the `encodedData` from [Step 1](#step-2-encode)
+
+```java 
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .call(this, encodedData);
+}
+
+```
+
+> This request will not use network resources<br>
+
+The SDK will broadcast the following events:
+
+* `EVENT_TR_CALL_SUCCESS`
+* `EVENT_TR_CALL_FAILED`
+
+> Use `PocketIDArgumentKey.KEY_DATA_STRING` to get the result string or
+use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+
+###Gas Estimate Request
+
+This is a convenience request to get an estimate of the `gasAmount` that can be used as the optional
+parameter of the [send](#step-31-write) request.
+
+```java 
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .gasEstimate(this, encodedData);
+}
+
+```
+
+The SDK will broadcast the following events:
+
+* `EVENT_TR_GAS_ESTIMATE_SUCCESS`
+* `EVENT_TR_GAS_ESTIMATE_FAILED`
+
+> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (int) or
+use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+
+<br>
+
+---
+
+##Extended Guide
+
+<br>
+
+###Events
 
 Most of the SDK functionality will have associated events that will be broadcast to notify of progress and result. 
 To listen for these events, you may implement the `PocketIDListener` and pass it to `PocketIDSdk.getInstance().registerListener(PocketIDListener)`. 
@@ -192,7 +339,7 @@ public class SampleActivity extends Activity implements PocketIDListener {
 
 <br>
 
-## Authentication 
+###Authentication 
 
 If you'd like more control over when to trigger the authentication flow instead of using the ['Login with PocketID'](#login) button, 
 all that is needed is to call `PocketIDSdk.getInstance().login()` and our client sdk will handle all the detailed work needed to generate an account.
@@ -259,7 +406,7 @@ Regardless of which approach taken there's 2 ways to handle the results of the `
 
     > Please see how to implement global [Event listener](#events)
 
-##User
+###User
 
 After the user has logged in, you can get the account detail by calling `PocketIDSdk.getInstance().getUser()` which will return a `User` object. 
    
@@ -279,7 +426,7 @@ public class MyActivity extends Activity {
 <br>
 
 
-##Logout
+###Logout
 
 The logged-in user will have a stored session in the client sdk.
 In order to log the user out, just call `PocketIDSdk.getInstance().logout()`.
@@ -293,7 +440,7 @@ The SDK will broadcast the following events:
 
 <br>
 
-##Forgot Password
+###Forgot Password
 
 PocketID client sdk’s onboarding process comes built-in with forgot and reset password feature. 
 This process have been simplified and is very seamless as the user will not have to go outside of the app at all to reset their password. 
@@ -308,7 +455,7 @@ After login, the SDK will broadcast the following events:
 
 <br>
 
-##Balance
+###Balance
 
 PocketID SDK provides access to a logged-in user's account balance.
   
@@ -346,7 +493,7 @@ Fetch Balance will broadcast the following events:
 
 <br>
 
-##Transactions
+###Transactions
 
 PocketID SDK provides access to a logged-in user's transactions.
   
@@ -384,7 +531,8 @@ Fetch Transactions will broadcast the following events:
 
 <br>
 
-##Customization
+---
+###Customization
    
 We understand every application is unique with it’s own design and functional needs. PocketID sdk provides the necessary tools for customization for the respective platforms. 
 On Android, `Customize` is the main source of sdk customization. You can get a reference to it by calling `PocketIDSdk.getInstance().customize()`. 
@@ -405,7 +553,7 @@ public class TestdApp extends Application {
 
 <br>
 
-##Theme
+####Theme
 
 As part of the customization, the SDK comes built-in with 2 standard themes.
 With clean and modern design, along with a `LIGHT` and `DARK` theme, the SDK will blend in with your (d)App perfectly.
@@ -424,6 +572,8 @@ public class TestdApp extends Application {
 
 > The `DARK` theme is only supported for `authentication` flows at the moment. 
 
+<br>
+
 ---
 ##Reference
 
@@ -436,7 +586,7 @@ public class TestdApp extends Application {
 
 <br>
 
-#### Customize
+####Customize
 
 Customize the SDK features
 
@@ -458,7 +608,7 @@ Listens for global events
 
 <br>
 
-#### PocketIDTheme
+####PocketIDTheme
 
 Contains the supported Theme Constants
 
@@ -467,7 +617,7 @@ Contains the supported Theme Constants
 
 <br>
 
-#### PocketIDSdk
+####PocketIDSdk
 
 Main interactions with the sdk is through this class. Used as Singleton.
 
@@ -503,10 +653,12 @@ Main interactions with the sdk is through this class. Used as Singleton.
     * Load the transactions response
 * `getTransactions()`**\*\*New**
     * returns `TransactionsResponse`
+* `getContractHandler()`**\*\*New**
+    * returns `ContractHandler`
 
 <br>
 
-#### User
+####User
 
 Class represents the user's data.
 
@@ -525,7 +677,7 @@ Class represents the user's data.
     
 <br>
 
-#### PocketIDEventType (formerly EventType)
+####PocketIDEventType (formerly EventType)
 
 Contains all the type that are sent to `PocketIDListener`
 
@@ -542,10 +694,18 @@ Contains all the type that are sent to `PocketIDListener`
 * `EVENT_BUY_CANCELLED`**\*\*New**
 * `EVENT_GET_TRANSACTIONS_SUCCESS`**\*\*New**
 * `EVENT_GET_TRANSACTIONS_FAILED`**\*\*New**
+* `EVENT_TR_ENCODE_SUCCESS`**\*\*New**
+* `EVENT_TR_ENCODE_FAILED`**\*\*New**
+* `EVENT_TR_CALL_SUCCESS`**\*\*New**
+* `EVENT_TR_CALL_FAILED`**\*\*New**
+* `EVENT_TR_GAS_ESTIMATE_SUCCESS`**\*\*New**
+* `EVENT_TR_GAS_ESTIMATE_FAILED`**\*\*New**
+* `EVENT_TR_SEND_SUCCESS`**\*\*New**
+* `EVENT_TR_SEND_FAILED`**\*\*New**
 
 <br>
 
-#### PocketIDUiUtil
+####PocketIDUiUtil
 
 SDK UI Utility class **\*\*New**
 
@@ -556,7 +716,7 @@ SDK UI Utility class **\*\*New**
     
 <br>
 
-#### BalanceResponse
+####BalanceResponse
 
 Class represents user's balance data **\*\*New**
 
@@ -569,7 +729,7 @@ Class represents user's balance data **\*\*New**
     
 <br>
 
-#### TransactionsResponse
+####TransactionsResponse
 
 Class represents user's transaction data **\*\*New**
 
@@ -578,7 +738,30 @@ Class represents user's transaction data **\*\*New**
     
 <br>
 
+####ContractHandler
+
+Smart Contract interactions through this class **\*\*New**
+
+* `isInitialized()`
+    * True or False
+* `init(abi, contractAddress)`
+    * True or False
+* `encode(context, method, params...)`
+    * Encodes a method
+* `call(context, encodedData)`
+    * Makes a read request
+* `send(context, encodedData)`
+    * Makes a write request
+* `send(context, encodedData, gasPriceAion, gasAmount)`
+    * Makes a write request
+* `gasEstimate(context, encodedData)`
+    * Request to get an estimate of `gasAmount`
+    
+<br>
+
 ---
 ##Coming Soon
 - The sdk will be hosted in Maven Repository<br/>
 - `DARK` theme support for `buy` and `send` flows
+
+<br>
