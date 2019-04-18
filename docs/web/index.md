@@ -7,7 +7,7 @@
 > <b>Staging server:</b> 
 [https://pocket-id-backend.herokuapp.com](https://pocket-id-backend.herokuapp.com) (It uses [AION mastery](https://mastery.aion.network/#/)) <br>
 > <b>Production server: </b>
-[https://pocketid-221015.appspot.com](https://pocketid-221015.appspot.com) (It uses [AION mainnet](https://mainnet.aion.network/#/dashboard))
+Coming soon (It uses [AION mainnet](https://mainnet.aion.network/#/dashboard))
 
 Our API has predictable resource-oriented URLs, accepts [form-encoded](https://en.wikipedia.org/wiki/POST_(HTTP)#Use_for_submitting_web_forms) request bodies, returns [JSON-encoded](http://www.json.org/) responses, and uses standard HTTP response codes, authentication, and verbs.
 
