@@ -1,67 +1,66 @@
-## Version
-Web APIs -> v1
+# Version: v1
 
 ---
 ## Getting Started
 
-Base URL:
-> Staging server: 
-https://pocket-id-backend.herokuapp.com (It uses [AION mastery](https://mastery.aion.network/#/)) <br>
-> Production server: 
-https://pocketid-221015.appspot.com (It uses [AION mainnet](https://mainnet.aion.network/#/dashboard))
+### Base URL:
+> <b>Staging server:</b> 
+[https://pocket-id-backend.herokuapp.com](https://pocket-id-backend.herokuapp.com) (It uses [AION mastery](https://mastery.aion.network/#/)) <br>
+> <b>Production server: </b>
+[https://pocketid-221015.appspot.com](https://pocketid-221015.appspot.com) (It uses [AION mainnet](https://mainnet.aion.network/#/dashboard))
 
 Our API has predictable resource-oriented URLs, accepts [form-encoded](https://en.wikipedia.org/wiki/POST_(HTTP)#Use_for_submitting_web_forms) request bodies, returns [JSON-encoded](http://www.json.org/) responses, and uses standard HTTP response codes, authentication, and verbs.
 
-<br/>
-<b>Note:</b>    
+!!! info "Note"
 
-PocketID requires AppID to be part of every single web api request.
+    PocketID requires `AppId` header parameter to be part of every single web api request.
 
-For staging server api, sample AppID can be used: `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br/>
-For production server, please [contact us](mailto:vikas@seribdlabs.com) to generate a production AppID.
+    For staging server api, sample AppId can be used: `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br/>
+    For production server, please [contact us](mailto:vikas@serindlabs.com) to generate a production AppId.
 
-:mod:`flask.ext.restplus`
--------------------------
-
-.. automodule:: flask_restplus
-    :members:
-
+---
 ## APIs
 
-### Auth
+!!! info "Note"
 
-#### 1. Register a new user<br/><br/>
+    To learn about the order of APIs you should call for particular actions, please follow this guide. [Click here](/web#guide)
+
+
+### 1. Auth
+
+#### 1.1. Register a new user
 
 ##### Url: 
-`POST: /api/v1/register`<br/><br/>
+`POST: /api/v1/register`
 
 ##### Description: 
-Registers a new user on PocketID.<br/><br/>
+Registers a new user on PocketID.
 
 ##### Example request:
     curl -X POST https://pocket-id-backend.herokuapp.com/api/v1/register \
         -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
         -H 'Content-Type: application/x-www-form-urlencoded' \
-        -d 'username=testuser&password=123123123&email=testuser@serindlabs.com&country_code=1&phone_number=4379999999&otp_code=111111&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+        -d 'username=testuser&password=123123123&email=testuser@pocketidapp.com&country_code=1&phone_number=4379999999&otp_code=111111&client_id=sdhjshj74hduh7cnu3n$2enjn@'
 
 ###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
 * `username` : <i>(Required)</i> New user's username 
 * `password` : <i>(Required)</i> New user's password 
 * `email` : <i>(Required)</i> Email address to use for user (non unique email address works too) 
-* `country_code` : <i>(Required)</i> User's phone number's country code 
+* `country_code` : <i>(Required)</i> Country code of user's phone number
 * `phone_number` : <i>(Required)</i> User's Phone number (This needs to be unique) 
 * `otp_code` : <i>(Required)</i> OTP code sent to user's phone number
-* `client_id` : <i>(Required)</i> Use - `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+* `client_id` : <i>(Required)</i> Use `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
 
 ##### Example response:
     {
         "message": "User created successfully!",
         "errors": [],
         "data": {
-            "access_token": "f6ee0424267a319d2ea0cfed03595fc89df4997b",
+            "access_token": "9455a5bb52c33e8a8c31a2b7c74cf5731f519e80",
             "token_type": "Bearer",
             "expires_in": 345599,
-            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f1",
+            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f2",
             "refresh_token_expires_in": 1727999,
             "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
         }
@@ -69,7 +68,236 @@ Registers a new user on PocketID.<br/><br/>
 
 ###### Response params:
 * `message` : <i>(String)</i> 
-* `errors` : <i>(Array)</i> New user's password 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `access_token` : Generated access token for user
+    * `token_type` : Token type 
+    * `expires_in` : Access token's expiry in seconds
+    * `refresh_token` : Generated refresh token for user
+    * `refresh_token_expires_in` : Refresh token's expiry in seconds
+    * `client_id` : Client id used for generating tokens
+
+<br/>
+#### 1.2. Login user
+
+##### Url: 
+`POST: /oauth/token`
+
+##### Description: 
+Generates access and refresh token for PocketID user.
+
+##### Example request:
+    curl -X POST https://pocket-id-backend.herokuapp.com/oauth/token \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'username=testuser&password=123123123&grant_type=password&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `username` : <i>(Required)</i> New user's username 
+* `password` : <i>(Required)</i> New user's password 
+* `grant_type` : <i>(Required)</i> Use `password` as hardcoded value
+* `client_id` : <i>(Required)</i> Use `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+
+##### Example response:
+    {
+        "message": "User logged in successfully!",
+        "errors": [],
+        "data": {
+            "access_token": "9455a5bb52c33e8a8c31a2b7c74cf5731f519e80",
+            "token_type": "Bearer",
+            "expires_in": 345599,
+            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f2",
+            "refresh_token_expires_in": 1727999,
+            "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `access_token` : Generated access token for user
+    * `token_type` : Token type 
+    * `expires_in` : Access token's expiry in seconds
+    * `refresh_token` : Generated refresh token for user
+    * `refresh_token_expires_in` : Refresh token's expiry in seconds
+    * `client_id` : Client id used for generating tokens
+
+<br/>
+#### 1.3. Refresh tokens
+
+##### Url: 
+`POST: /oauth/token`
+
+##### Description: 
+Refreshes access and refresh token using their existing refresh token.
+
+##### Example request:
+    curl -X POST https://pocket-id-backend.herokuapp.com/oauth/token \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'grant_type=refresh_token&refresh_token=dd6fb873a6e871125337e36f877fd4606b1906f0&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `grant_type` : <i>(Required)</i> Use `refresh_token` as hardcoded value
+* `refresh_token` : <i>(Required)</i> User's refresh token
+* `client_id` : <i>(Required)</i> Use `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+
+##### Example response:
+    {
+        "message": "User logged in successfully!",
+        "errors": [],
+        "data": {
+            "access_token": "9455a5bb52c33e8a8c31a2b7c74cf5731f519e80",
+            "token_type": "Bearer",
+            "expires_in": 345599,
+            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f2",
+            "refresh_token_expires_in": 1727999,
+            "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `access_token` : Generated access token for user
+    * `token_type` : Token type 
+    * `expires_in` : Access token's expiry in seconds
+    * `refresh_token` : Generated refresh token for user
+    * `refresh_token_expires_in` : Refresh token's expiry in seconds
+    * `client_id` : Client id used for generating tokens
+
+<br/>
+#### 1.4. Username availability
+
+##### Url: 
+`GET: /api/v1/users/username/{{username}}`
+
+##### Description: 
+Checks thr availability of username
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/users/username/{{username} \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `username` (path): <i>(Required)</i> Username to check availability for
+
+##### Example response:
+Status code 200:
+```
+    {
+        "message": "username is available",
+        "errors": [],
+        "data": null
+    }
+```
+Status code 400:
+```
+    {
+        "message": "username is occupied",
+        "errors": [],
+        "data": null
+    }
+```
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+---
+### 2. Reset Password
+#### 2.1. Reset password using phone number
+
+##### Url: 
+`PUT: /api/v1/user/password`
+
+##### Description: 
+Reset password using phone number
+
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/user/password \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'country_code=1&phone_number=9999999999&password=123123123&otp_code=111111&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `country_code` : <i>(Required)</i> Country code of user's phone number
+* `phone_number` : <i>(Required)</i> Phone number of existing user
+* `password` : <i>(Required)</i> New password to set
+* `otp_code` : <i>(Required)</i> OTP code sent to user's phone number
+* `client_id` : <i>(Required)</i> Use `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+
+##### Example response:
+    {
+        "message": "Password updated successfully!",
+        "errors": [],
+        "data": {
+            "access_token": "9455a5bb52c33e8a8c31a2b7c74cf5731f519e80",
+            "token_type": "Bearer",
+            "expires_in": 345599,
+            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f2",
+            "refresh_token_expires_in": 1727999,
+            "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `access_token` : Generated access token for user
+    * `token_type` : Token type 
+    * `expires_in` : Access token's expiry in seconds
+    * `refresh_token` : Generated refresh token for user
+    * `refresh_token_expires_in` : Refresh token's expiry in seconds
+    * `client_id` : Client id used for generating tokens
+
+<br/>
+#### 2.2. Reset password using username
+
+##### Url: 
+`PUT: /api/v1/user/password`
+
+##### Description: 
+Reset password using phoe number
+
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/user/password \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'username=testuser&password=123123123&otp_code=111111&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `username` : <i>(Required)</i> Username of existing user
+* `password` : <i>(Required)</i> New password to set
+* `otp_code` : <i>(Required)</i> OTP code sent to user's phone number
+* `client_id` : <i>(Required)</i> Use `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+
+##### Example response:
+    {
+        "message": "Password updated successfully!",
+        "errors": [],
+        "data": {
+            "access_token": "9455a5bb52c33e8a8c31a2b7c74cf5731f519e80",
+            "token_type": "Bearer",
+            "expires_in": 345599,
+            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f2",
+            "refresh_token_expires_in": 1727999,
+            "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
 * `data` : <i>(Object)</i>
     * `access_token` : Generated access token for user
     * `token_type` : Token type 
@@ -79,631 +307,685 @@ Registers a new user on PocketID.<br/><br/>
     * `client_id` : Client id used for generating tokens
 
 
-#### 1. Register a new user<br/><br/>
+---
+### 3. Send OTP
+#### 3.1. Send OTP using phone number
 
 ##### Url: 
-`POST: /api/v1/register`<br/><br/>
+`POST: /api/v1/otp/send`
 
 ##### Description: 
-Registers a new user on PocketID.<br/><br/>
+Send OTP using phone number
 
 ##### Example request:
-    curl -X POST https://pocket-id-backend.herokuapp.com/api/v1/register \
+    curl -X POST https://pocket-id-backend.herokuapp.com/api/v1/otp/send \
         -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
         -H 'Content-Type: application/x-www-form-urlencoded' \
-        -d 'username=testuser&password=123123123&email=testuser@serindlabs.com&country_code=1&phone_number=4379999999&otp_code=111111&client_id=sdhjshj74hduh7cnu3n$2enjn@'
+        -d 'country_code=1&phone_number=9999999999&new_user=1'
 
 ###### Request params:
-* `username` : <i>(Required)</i> New user's username 
-* `password` : <i>(Required)</i> New user's password 
-* `email` : <i>(Required)</i> Email address to use for user (non unique email address works too) 
-* `country_code` : <i>(Required)</i> User's phone number's country code 
-* `phone_number` : <i>(Required)</i> User's Phone number (This needs to be unique) 
-* `otp_code` : <i>(Required)</i> OTP code sent to user's phone number
-* `client_id` : <i>(Required)</i> Use - `sdhjshj74hduh7cnu3n$2enjn@` as hardcoded value
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `country_code` : <i>(Required)</i> Country code of user's phone number
+* `phone_number` : <i>(Required)</i> Phone number of existing user
+* `new_user` : <i>(Required)</i> Possible values - (0, 1). <br/>
+    0 - This is an existing user (to be used for Forgot password). <br/>
+    1 - This is a new user (to be used while registering)
 
 ##### Example response:
     {
-        "message": "User created successfully!",
+        "message": "OTP sent successfully!",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+<br/>
+#### 3.2. Send OTP using username
+
+##### Url: 
+`POST: /api/v1/otp/send`
+
+##### Description: 
+Send OTP using username
+
+##### Example request:
+    curl -X POST https://pocket-id-backend.herokuapp.com/api/v1/otp/send \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'username=testuser&new_user=0'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `username` : <i>(Required)</i> Username of existing user
+* `new_user` : <i>(Required)</i> Possible values - (0, 1). <br/>
+    0 - This is an existing user (to be used for Forgot password). <br/>
+    1 - This is a new user (throws an error)
+
+##### Example response:
+    {
+        "message": "OTP sent successfully!",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+
+
+---
+### 4. User
+#### 4.1. Get user personal information
+
+##### Url: 
+`GET: /api/v1/me`
+
+##### Description: 
+Get user personal information using access token
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/me \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+
+##### Example response:
+    {
+        "message": "The request was successful.",
         "errors": [],
         "data": {
-            "access_token": "f6ee0424267a319d2ea0cfed03595fc89df4997b",
-            "token_type": "Bearer",
-            "expires_in": 345599,
-            "refresh_token": "dd6fb873a6e871125337e36f877fd4606b1906f1",
-            "refresh_token_expires_in": 1727999,
-            "client_id": "sdhjshj74hduh7cnu3n$2enjn@"
+            "username": "testuser",
+            "countryCode": 1,
+            "phoneNumber": 9999999999,
+            "email": "testuser@pocketidapp.com"
         }
     }
 
 ###### Response params:
 * `message` : <i>(String)</i> 
-* `errors` : <i>(Array)</i> New user's password 
+* `errors` : <i>(Array)</i>
 * `data` : <i>(Object)</i>
-    * `access_token` : Generated access token for user
-    * `token_type` : Token type 
-    * `expires_in` : Access token's expiry in seconds
-    * `refresh_token` : Generated refresh token for user
-    * `refresh_token_expires_in` : Refresh token's expiry in seconds
-    * `client_id` : Client id used for generating tokens
+    * `username` : User's username
+    * `countryCode` : Country code of user's phone number
+    * `phoneNumber` : User's Phone number (This field is unique across users) 
+    * `email` : User's email address
+
+<br/>
+#### 4.2. Update user personal information
+
+##### Url: 
+`PUT: /api/v1/me`
+
+##### Description: 
+Update user personal (email, first name, last name) information 
+
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/me \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'email=testuser@pocketidapp.com'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `email` : <i>(Optional)</i> User's new email address 
+* `first_name` : <i>(Optional)</i> New last name of user
+* `last_name` : <i>(Optional)</i> New first name of user
+
+##### Example response:
+    {
+        "message": "User information updated successfully!",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
 
 
+<br/>
+#### 4.3. Update user phone number
 
-    
+##### Url: 
+`PUT: /api/v1/me`
 
-Once you have the client SDK, you’re ready to integrate it with your (d)App.
+##### Description: 
+Update user phone number 
 
-1. Add the `pocketid-sdk-release-1.0.aar` file to your project’s `/libs` folder 
-1. Update your project dependencies to import the sdk
-    
-    in your `app/build.gradle`, add the following under `dependencies {}`
-  
-        implementation(name : 'pocketid-sdk-release-1.0', ext : 'aar')
-        implementation 'com.google.code.gson:gson:2.8.5'
-        implementation 'com.squareup.retrofit2:retrofit:2.5.0'
-        implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-        implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
-        implementation 'com.hbb20:ccp:2.2.3'
-        implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-        implementation 'com.android.support:cardview-v7:28.0.0'
-        implementation 'com.android.support:appcompat-v7:28.0.0'
-        implementation 'com.stripe:stripe-android:8.2.0'
-        implementation 'com.github.bumptech.glide:glide:4.8.0'
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/me \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'country_code=1&phone_number=4379951534&otp_code=770047'
 
-    > <font color="red"><b>Upgrading?</b></font> please update your dependencies.<br/>
-    
-1. Add `flatDir` to your `app/build.gradle`
-      
-        repositories {
-            flatDir {
-                dirs 'libs'
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `country_code` : <i>(Required)</i> Country code of user's new phone number
+* `phone_number` : <i>(Required)</i> User's new phone number (this should be unique)
+* `otp_code` : <i>(Required)</i> OTP code sent to user's new phone number
+
+##### Example response:
+    {
+        "message": "User information updated successfully!",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+<br/>
+#### 4.4. Update password
+
+##### Url: 
+`PUT: /api/v1/me/password`
+
+##### Description: 
+Update password using old password and access token
+
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/me/password \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'old_password=123456789&new_password=987654321'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `old_password` : <i>(Required)</i> Current password of user's account
+* `new_password` : <i>(Required)</i> New password to set for user's account
+
+##### Example response:
+    {
+        "message": "Password updated successfully!",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+
+<br/>
+#### 4.5. Logout user
+
+##### Url: 
+`POST: /api/v1/me/logout`
+
+##### Description: 
+Logs user out of application by expiring tokens
+
+##### Example request:
+    curl -X POST https://pocket-id-backend.herokuapp.com/api/v1/me/logout \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+
+##### Example response:
+    {
+        "message": "User logged out successfully",
+        "errors": [],
+        "data": null
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
+---
+### 5. Wallet 
+#### 5.1. Get wallet balance
+
+##### Url: 
+`GET: /api/v1/balance`
+
+##### Description: 
+Get user wallet address and their AION & ATS balances. In the current version, users can only have 1 wallet but in future multiple wallets will be supported.
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/balance \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+
+##### Example response:
+    {
+        "message": "Balance fetched successfully!",
+        "errors": [],
+        "data": {
+            "balance": {
+                "addresses": {
+                    "0xa097769c231467f65de02df701645ac8f27bbd7b428f00d2b573f751cff230d1": {
+                        "total": 49.92727643353506,
+                        "tokens": [
+                            {
+                                "balance": 49.92727643353506,
+                                "name": "AION",
+                                "symbol": "AION"
+                            }
+                        ]
+                    }
+                }
+            },
+            "defaultWallet": "0xa097769c231467f65de02df701645ac8f27bbd7b428f00d2b573f751cff230d1"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `defaultWallet` : <i>(String)</i> Default wallet address. If user has multiple wallets then this will be considered as default for receiving AION tokens.
+    * `balance` : <i>(Object)</i>
+        * `{{wallet address}}` : <i>(Object)</i>
+            * `total` : Total AION amount user wallet contains
+            * `tokens` : <i>(Array)</i>
+                * `balance` : <i>(String)</i> `AION` balance or balance of ATS token
+                * `name` : <i>(String)</i> `AION` or name of the ATS token
+                * `symbol` : <i>(String)</i> `AION` or symbol of ATS token
+
+
+<br/>
+#### 5.2. Get wallet transactions
+
+##### Url: 
+`GET: /api/v1/transactions`
+
+##### Description: 
+Get user wallet transactions using access token. It only shows the transactions made through PocketID.
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/transactions \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+
+##### Example response:
+    {
+        "message": "Transactions fetched successfully!",
+        "errors": [],
+        "data": {
+            "transactions": [
+                {
+                    "fiatAmount": {
+                        "currency": "cad"
+                    },
+                    "cryptoDetails": {
+                        "name": "AION",
+                        "logoUrl": "https://i.imgur.com/ffhi4AM.png",
+                        "aionAmount": 1,
+                        "feesAmountInAion": 0.000252
+                    },
+                    "status": "Success",
+                    "username": "testuser",
+                    "toUsername": "testuser1",
+                    "txType": "Send",
+                    "txHash": "0x36441a30245d100075f4fadb48482ade5a422f6985580d48650d0fea5f2704d0",
+                    "createdAt": "2019-04-16T23:19:20.045Z",
+                    "web3": null
+                },
+                {
+                    "fiatAmount": {
+                        "currency": "cad"
+                    },
+                    "cryptoDetails": {
+                        "name": "AION",
+                        "logoUrl": "https://i.imgur.com/ffhi4AM.png",
+                        "aionAmount": 1,
+                        "feesAmountInAion": 0.000252
+                    },
+                    "status": "Success",
+                    "username": "testuser",
+                    "toUsername": "testuser1",
+                    "txType": "Send",
+                    "txHash": "0x36441a30245d100075f4fadb48482ade5a422f6985580d48650d0fea5f2704d1",
+                    "createdAt": "2019-04-16T23:19:20.045Z",
+                    "web3": {
+                        "nrgPrice": "0x2cb417800",
+                        "blockHash": "0x3edaf48a0faae3ce74edf32155861b3f62336a7baf86d325fe3b57915b79ddfe",
+                        "nrg": 21000,
+                        "transactionIndex": 0,
+                        "nonce": 65,
+                        "input": "0x",
+                        "blockNumber": 2214267,
+                        "gas": 21000,
+                        "from": "0xA097769C231467f65de02df701645AC8F27BBd7b428f00d2b573f751CFF230d1",
+                        "to": "0xA078E890a4b99b3CCC96262C8431aA2C1274Ea3461207D07e62932CEb6c6Cb46",
+                        "value": "1000000000000000000",
+                        "hash": "0x36441a30245d100075f4fadb48482ade5a422f6985580d48650d0fea5f2704d1",
+                        "gasPrice": "12000000000",
+                        "timestamp": 1555456785
+                    }
+                },
+            ]
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `transactions` : <i>(Array)</i> Sorted - latest first
+        * `fiatAmount` : <i>(Object)</i> Fiat current details
+        * `cryptoDetails` : <i>(Object)</i> Contains crypto currency, amount user bought/transferred details
+        * `status` : <i>(String)</i> Transaction status (Possible values - [`Success`, `Failed`])
+        * `username` : <i>(String)</i> User who is transferring amount
+        * `toUsername` : <i>(String)</i> Amount transferred to user
+        * `txType` : <i>(String)</i> Transaction type (Possible values - [`Buy`, `Send`])
+            Buy - Amount bought by user
+            Send - Amount transferred by/to another user
+        * `txHash` : <i>(String)</i> Transaction hash
+        * `createdAt` : <i>(String)</i> Transaction started at
+        * `web3` : Either `null` or contains `object`
+            `null` - Transaction isn't completed on blockchain protocol
+            `object` - Information provided by blockchain protocol for transaction hash
+
+<br/>
+#### 5.3. Get send token transfer fee
+
+##### Url: 
+`GET: /api/v1/transfer/fee`
+
+##### Description: 
+Get fee for transfering tokens for AION coin & ATS tokens linked with PocketID app
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/transfer/fee \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+
+##### Example response:
+    {
+        "message": "Gas estimates fetched successfully!",
+        "errors": [],
+        "data": {
+            "message": "Gas estimate",
+            "errors": [],
+            "data": {
+                "slow": {
+                    "gasPriceInAion": "0.00000001"
+                },
+                "normal": {
+                    "gasPriceInAion": "0.000000012"
+                },
+                "fast": {
+                    "gasPriceInAion": "0.000000014"
+                },
+                "estimates": {
+                    "AION": {
+                        "unit": "aion",
+                        "gas": 21000
+                    }
+                },
+                "conversions": {
+                    "aionToAmp": "0.000000001",
+                    "aionToNAmp": "0.000000000000000001"
+                }
             }
-        }    
-
-1. Sync your project with gradle
-<br>
-
-> If the above steps don't work for your project, follow the alternate [approach](https://developer.android.com/studio/projects/android-library#AddDependency) on how to import `.aar` files.
-
----
-## Initialization
-
-PocketID requires this mandatory step in order to initialize the sdk before any of its features to be consumed. 
-You will find the class `PocketIDSdk` is the main source of your interaction with the sdk. 
-To initialize the SDK, you’ll need to call `PocketIDSdk.getInstance().initialize()` in your application startup and pass in your `AppID`.
-
-> In development environment use this sample AppID:<br>
-> `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br>
-> For production, please contact us to generate a prod AppID
-
-```java
-public class TestdApp extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        PocketIDSdk.getInstance().initialize(this, "nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)");
-    }
-}
-
-```
-<br>
-
----
-## Basic Guide
-
-PocketID integration makes it very simple for your users to adopt blockchain without having the need or the pressure to fully understand it. 
-Your users will appreciate when your onboarding process is similar to what they are already used to, ie username and password. 
-In addition, PocketID SDK will allow (d)Apps to make crypto transactions. Logged-in users can `buy` with their credit card and `send` tokens to other PocketID users simply by their username.
-
-<br>
-
-### Login
-
-Add the `PocketIDButton` to your activity's layout file.
-```xml 
-<com.serindlabs.pocketid.sdk.widget.PocketIDButton
-    android:id="@+id/btnLogin" 
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
-```
-
-Override `onActivityResult()` in your activity and handle the successfully logged-in user.
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (requestCode == PocketIDRequestCode.AUTHENTICATION && resultCode == RESULT_OK) {
-        // code here
-    } else {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-}
-```
-> `PocketIDSdk.getInstance().requiresLogin()` can be used to show or hide the login button</br>
-
-> Prerequisites:</br>
-> - [Getting Started](#getting-started)</br>
-> - [Initialization](#initialization)
-
-
-
-### Buy
-
-To trigger the `buy` token flow:
-
-```java
-@Override
-protected void onClick(View v) {
-    PocketIDSdk.getInstance().buyToken(this);
-}
-```
-
-Override `onActivityResult()` in your activity and handle the `buy` result.
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (requestCode == PocketIDRequestCode.BUY_TOKEN && resultCode == RESULT_OK) {
-        // code here
-    } else {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-}
-```
-
-> Prerequisites:</br>
-> User needs to be logged in
-
-### Send
-
-To trigger the `send` token flow:
-
-```java
-@Override
-protected void onClick(View v) {
-    PocketIDSdk.getInstance().sendToken(this);
-}
-```
-
-Override `onActivityResult()` in your activity and handle the `send` result.
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (requestCode == PocketIDRequestCode.SEND_TOKEN && resultCode == RESULT_OK) {
-        // code here
-    } else {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-}
-```
-
-> Prerequisites:</br>
-> User needs to be logged in
-
-</br>
-
----
-##Events
-
-Most of the SDK functionality will have associated events that will be broadcast to notify of progress and result. 
-To listen for these events, you may implement the `PocketIDListener` and pass it to `PocketIDSdk.getInstance().registerListener(PocketIDListener)`. 
-
-In order to stop receiving the events, you can pass the same instance of your `PocketIDListener` to `PocketIDSdk.getInstance().unregisterListener(PocketIDListener)`.
-
-```java 
-public class SampleActivity extends Activity implements PocketIDListener {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        PocketIDSdk.getInstance().registerListener(this);
-    }
-    
-    @Override
-    public void onEvent(String event, Bundle data) {
-        switch (event)  {
-            case EventType.EVENT_LOGIN_SUCCESS:
-                 // code
-                break;
         }
     }
-    
-    @Override
-    protected void onDestroy() {
-        PocketIDSdk.getInstance().unregisterListener(this);
-        super.onDestroy();
-    }
-}
-```
 
-<br>
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `message` : <i>(String)</i>
+    * `errors` : <i>(Array)</i>
+    * `data` : <i>(Object)</i>
+        * `slow` : <i>(Object)</i> Contains gas price in aion for a slow transaction
+        * `normal` : <i>(Object)</i> Contains gas price in aion for a normal transaction
+        * `fast` : <i>(Object)</i> Contains gas price in aion for a fast transaction
+        * `estimates` : <i>(Object)</i>
+            * `{{ AION or token name }}` : <i>(Object)</i> `AION` balance or balance of ATS token
+                * `unit` : <i>(Integer)</i> Minimum gas units to be used for making a transaction
+                * `gas` : <i>(String)</i> `aion` or symbol of ATS token
+        * `conversions` : <i>(Object)</i> AION to amp and namp conversions chart
 
-## Authentication 
+<br/>
+#### 5.4. Transfer amount from one user's wallet to another
 
-If you'd like more control over when to trigger the authentication flow instead of using the ['Login with PocketID'](#login) button, 
-all that is needed is to call `PocketIDSdk.getInstance().login()` and our client sdk will handle all the detailed work needed to generate an account.
+##### Url: 
+`PUT: /api/v1/transfer`
 
-```java 
-public class MyActivity extends Activity {
+##### Description: 
+Transfer AION coin or ATS tokens from one user's wallet to another PocketID user
 
-    @Override
-    public void onClick(View view) {
-        PocketIDSdk.getInstance().login(this, false);
-    }
-}
-```
+##### Example request:
+    curl -X PUT https://pocket-id-backend.herokuapp.com/api/v1/transfer \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'to_username=testuser1&amount_in_aion=1&gas_price_in_aion=0.000000015&crypto_name=AION&gas=21000'
 
-Pass `true` for `defaultToRegister` if you want the initial screen to default to the `Register` flow instead of the `Login` flow.
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `to_username` : <i>(Required)</i> Transfer amount to this PocketID user
+* `amount_in_aion` : <i>(Required)</i> Amount to transfer (for native token - in `AION`, for ATS token - in its own symbol).
+* `gas_price_in_aion` : <i>(Required)</i> Gas price in AION. This price is paid by sender
+* `gas` : <i>(Required)</i> Amount of gas to use for this transaction
+* `crypto_name` : <i>(Required)</i> Name of the crypto to transfer. Use `AION` as hardcoded value for now until ATS tokens are added to PocketID. `AION` is for native token.
 
-<br>
-
-**Handling Result**
-
-Regardless of which approach taken there's 2 ways to handle the results of the `authentication` flow:
-
-1. using `onActivityResult()` 
-        
-        @Override
-        protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-            if (requestCode == PocketIDRequestCode.AUTHENTICATION && resultCode == RESULT_OK) {
-                // code here
-            } else {
-                super.onActivityResult(requestCode, resultCode, data);
+##### Example response:
+        {
+        "message": "Token amount transfer started",
+        "errors": [],
+        "data": {
+            "transaction": {
+                "hash": "0x31244a0e17a6c51844d8d39a0042aefa3e14fc311a20d3e7bfa3caabe52b4248"
             }
         }
-        
-    
-    This is the assured way of knowing when the user is fully authenticated and that the sdk
-    has finished the flow and given the results back to the calling (d)App.
-    
-    > Errors will not be returned here. <br/>
-    > The end result of registration is a logged-in user.
-    
+    }
 
-1. using registered [Events](#eventtype)
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `transaction` : <i>(Object)</i>
+        * `hash` : transaction hash generated on blockchain protocol
 
 
-        @Override
-        public void onEvent(String event, Bundle bundle) {
-            switch (event) {
-                case PocketIDEventType.EVENT_LOGIN_SUCCESS:
-                    // code
-                    break;
-                case PocketIDEventType.EVENT_LOGIN_FAILED:
-                    // code
-                    break;
-                case PocketIDEventType.EVENT_ACCOUNT_REGISTERED:
-                    // code
-                    break;
-                case PocketIDEventType.EVENT_REGISTER_FAILED:
-                    // code
-                    break;
+---
+### 6. Smart contracts 
+#### 6.1. Encode smart contract method with parameters 
+
+##### Url: 
+`POST: /api/v1/contract/data-encode`
+
+##### Description: 
+Encode smart contract method with parameters
+
+##### Example request:
+    curl -X POST  https://pocket-id-backend.herokuapp.com/api/v1/contract/data-encode \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'contract_address=0xa0c90ef3cd44e6f8d9f863a6ad7cac2e0aa4c19346b3fce23758c735d5513c29&contract_abi=[{"outputs":[],"constant":false,"payable":false,"inputs":[{"name":"newString","type":"string"}],"name":"setString","type":"function"},{"outputs":[{"name":"","type":"string"}],"constant":false,"payable":false,"inputs":[],"name":"getString","type":"function"},{"outputs":[],"payable":false,"inputs":[],"name":"","type":"constructor"}]&method_name=setString(string)&method_params[]=HelloAVM'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `contract_address` : <i>(Required)</i> Contract address
+* `contract_abi` : <i>(Required)</i> Generated contract ABI
+* `method_name` : <i>(Required)</i> Method name with parameters or signature
+* `method_params` : <i>(Required)</i> Array - Method params
+
+##### Example response:
+    {
+        "message": "Data encoded successfully!",
+        "errors": [],
+        "data": {
+            "encodedData": "0x7fcaf666000000000000000000000000000000100000000000000000000000000000000948656c6c6f41564d360000000000000000000000000000000000000000000000"
+        }
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `encodedData` : <i>(String)</i> Encoded ABI byte code to send via a call or send API
+
+<br/>
+#### 6.2. Estimate gas for smart contract method
+
+##### Url: 
+`GET: /api/v1/contract/gas-estimate`
+
+##### Description: 
+Encode smart contract method with parameters
+
+##### Example request:
+    curl -X GET 'https://pocket-id-backend.herokuapp.com/api/v1/contract/gas-estimate?contract_address=0xa0c90ef3cd44e6f8d9f863a6ad7cac2e0aa4c19346b3fce23758c735d5513c29&encoded_data=0x7fcaf666000000000000000000000000000000100000000000000000000000000000000948656c6c6f41564d360000000000000000000000000000000000000000000000' \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `contract_address` (query) : <i>(Required)</i> Contract address
+* `encoded_data` (query) : <i>(Required)</i> Encoded ABI byte code
+
+##### Example response:
+    {
+        "message": "Estimated gas successfully!",
+        "errors": [],
+        "data": 39429
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Integer)</i> Minimum amount of gas to be used for this transaction
+
+<br/>
+#### 6.3. Read from smart contract
+
+##### Url: 
+`GET: /api/v1/contract/call`
+
+##### Description: 
+Encode smart contract method with parameters
+
+##### Example request:
+    curl -X POST  https://pocket-id-backend.herokuapp.com/api/v1/contract/call \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'contract_address=0xa0c90ef3cd44e6f8d9f863a6ad7cac2e0aa4c19346b3fce23758c735d5513c29&encoded_data=0x89ea642f&decode_to=string'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `contract_address` : <i>(Required)</i> Contract address
+* `encoded_data` : <i>(Required)</i> Encoded ABI byte code
+* `decode_to` : <i>(Optional)</i> Response message to be decoded in. [Possible values](https://solidity.readthedocs.io/en/develop/types.html#) (Default - `string`)
+
+
+##### Example response:
+    {
+        "message": "Read call successful!",
+        "errors": [],
+        "data": "abc"
+    }
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Integer)</i> Decoded response
+
+<br/>
+#### 6.4. Send a transaction to smart contract
+
+##### Url: 
+`GET: /api/v1/contract/send`
+
+##### Description: 
+Send a transaction to the smart contract. Note this can alter the smart contract state.
+
+##### Example request:
+    curl -X POST  https://pocket-id-backend.herokuapp.com/api/v1/contract/send \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)' \
+        -H 'Authorization: Bearer 9455a5bb52c33e8a8c31a2b7c74cf5731f519e80' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        -d 'contract_address=0xa0c90ef3cd44e6f8d9f863a6ad7cac2e0aa4c19346b3fce23758c735d5513c29&encoded_data=0x7fcaf666000000000000000000000000000000100000000000000000000000000000000948656c6c6f41564d360000000000000000000000000000000000000000000000&gas_price_in_aion=0.000000011&gas=39429'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `Authorization` (header): <i>(Required)</i> `Bearer {{access_token}}`
+* `contract_address` : <i>(Required)</i> Contract address
+* `encoded_data` : <i>(Required)</i> Encoded ABI byte code
+* `gas_price_in_aion` : <i>(Optional)</i> Gas price in AION. This price is paid by sender. (Default = `0.00000001` (10 Amp)) 
+* `gas` : <i>(Optional)</i> Amount of gas to use for this transaction. (Default = `50000`)
+
+##### Example response:
+    {
+        "message": "Estimated gas successfully!",
+        "errors": [],
+        "data": {
+            "transaction": {
+                "hash": "0x8694124a11519ca22cf63831f5bce14ac6f5724931b02b73330c1354d999f271"
             }
-        }   
-        
-    This approach is ideal for logging, analytics or for updating `non-flow` ui components of your (d)App.
-
-    > Please see how to implement global [Event listener](#events)
-
-##User
-
-After the user has logged in, you can get the account detail by calling `PocketIDSdk.getInstance().getUser()` which will return a `User` object. 
-   
-```java 
-public class MyActivity extends Activity {
-
-    @Override
-    public void onClick(View view) {
-        User user = PocketIDSdk.getInstance().getUser();
-    }
-}
-```
-
-> Prerequisite:<br/>
-> User must be logged-in or will return `null`
-
-<br>
-
-
-##Logout
-
-The logged-in user will have a stored session in the client sdk.
-In order to log the user out, just call `PocketIDSdk.getInstance().logout()`.
-This will clear the session from the sdk and `PocketIDSdk.getInstance().requiresLogin()` will return `true`. 
-
-> The `PocketIDSdk.getInstance().getUser()` will return `null`.
-
-The SDK will broadcast the following events:
-
-* `EVENT_LOGGED_OUT`
-
-<br>
-
-##Forgot Password
-
-PocketID client sdk’s onboarding process comes built-in with forgot and reset password feature. 
-This process have been simplified and is very seamless as the user will not have to go outside of the app at all to reset their password. 
-This flow is built-in to the login process therefore the developer don’t have to do anything extra to support this feature. 
-
-> The end result of forgot/reset password will be a logged-in user after successful reset.
-
-After login, the SDK will broadcast the following events:
-
-* `EVENT_LOGIN_SUCCESS`
-* `EVENT_LOGIN_FAILED`
-
-<br>
-
-##Balance
-
-PocketID SDK provides access to a logged-in user's account balance.
-  
-```java 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (PocketIDSdk.getInstance().getBalance() == null) {
-            PocketIDSdk.getInstance().fetchBalance();
-        } else {
-            BalanceResponse balanceRsp = PocketIDSdk.getInstance().getBalance();
         }
     }
-    
-    @Override
-    public void onEvent(String event, Bundle bundle) {
-        switch (event) {
-            case PocketIDEventType.EVENT_GET_BALANCE_SUCCESS:
-                BalanceResponse balanceRsp = PocketIDSdk.getInstance().getBalance();
-                break;
-            case PocketIDEventType.EVENT_GET_BALANCE_FAILED:
-                // show error
-                break;
-        }
-    }
-```
 
-Fetch Balance will broadcast the following events:
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>(Object)</i>
+    * `transaction` : <i>(Object)</i>
+        * `hash` : transaction hash generated on blockchain protocol
 
-* `EVENT_GET_BALANCE_SUCCESS`
-* `EVENT_GET_BALANCE_FAILED`
-
-> Prerequisite:<br/>
-> User must be logged-in<br/>
-> Global [Event listener](#events)
-
-<br>
-
-##Transactions
-
-PocketID SDK provides access to a logged-in user's transactions.
-  
-```java 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (PocketIDSdk.getInstance().getTransactions() == null) {
-            PocketIDSdk.getInstance().fetchTransactions();
-        } else {
-            TransactionsResponse transactionsRsp = PocketIDSdk.getInstance().getTransactions();
-        }
-    }
-    
-    @Override
-    public void onEvent(String event, Bundle bundle) {
-        switch (event) {
-            case PocketIDEventType.EVENT_GET_TRANSACTIONS_SUCCESS:
-                TransactionsResponse transactionsRsp = PocketIDSdk.getInstance().getTransactions();
-                break;
-            case PocketIDEventType.EVENT_GET_TRANSACTIONS_FAILED:
-                // show error
-                break;
-        }
-    }
-```
-
-Fetch Transactions will broadcast the following events:
-
-* `EVENT_GET_TRANSACTIONS_SUCCESS`
-* `EVENT_GET_TRANSACTIONS_FAILED`
-
-> Prerequisite:<br/>
-> User must be logged-in<br/>
-> Global [Event listener](#events)
-
-<br>
-
-##Customization
-   
-We understand every application is unique with it’s own design and functional needs. PocketID sdk provides the necessary tools for customization for the respective platforms. 
-On Android, `Customize` is the main source of sdk customization. You can get a reference to it by calling `PocketIDSdk.getInstance().customize()`. 
-It provides method chaining for easy usage.
-For a full list of supported customization, please see the [Reference](#customize).
-
-```java 
-public class TestdApp extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        PocketIDSdk.getInstance().customize()
-                    .setLogo(R.drawable.logo);
-    }
-}
-```
-
-<br>
-
-##Theme
-
-As part of the customization, the SDK comes built-in with 2 standard themes.
-With clean and modern design, along with a `LIGHT` and `DARK` theme, the SDK will blend in with your (d)App perfectly.
-
-```java 
-public class TestdApp extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        PocketIDSdk.getInstance().customize()
-                    .setTheme(PocketIDTheme.DARK);
-    }
-}
-```
-
-> The `DARK` theme is only supported for `authentication` flows at the moment. 
 
 ---
-##Reference
+## Guide
 
-<br>
-#### PocketIDButton
+### 1. Register user
+1. (Optional) Check for username availability using [username availablility api](/web#14-user-availability)
+2. Send an OTP to this user's phone number using <i>[Send OTP using phone number API](/web#31-send-otp-using-phone-number)</i>. <br/>
+Note: `new_user` parameter should be `1` while calling this API.
+3. Call [register API](/web#11-register-a-new-user) with all the params including OTP sent to user's phone number
 
-* Static Button for Logging in with PocketID
-* Handles it’s own click event
-* Launches the Login Flow
+### 2. Login user
+1. Call [login API](/web#12-login-user) with all the required parameters
 
-<br>
+### 3. Read from contract
+1. Encode smart contract method with parameters using [this API](/web#61-encode-smart-contract-method-with-parameters).
+2. Call [read from contract API](/web#63-read-from-smart-contract) with encoded data provided by previous API.
 
-#### Customize
-
-Customize the SDK features
-
-* `setTheme(theme)`
-* `setLogo(logo)`
-* `setShowLoginBackButton(show)`
-* `setShowRegisterBackButton(show)`
-* `setAppName(appName)`**\*\*New**
-* `setFiatDecimalPoints(numOfPoints)`**\*\*New**
-* `setTokenDecimalPoints(numOfPoints)`**\*\*New**
-
-<br>
-
-#### PocketIDListener
-
-Listens for global events
-
-* `onEvent(event, data)`
-
-<br>
-
-#### PocketIDTheme
-
-Contains the supported Theme Constants
-
-* `LIGHT`
-* `DARK`
-
-<br>
-
-#### PocketIDSdk
-
-Main interactions with the sdk is through this class. Used as Singleton.
-
-* `initialize()`
-    * Validates the state of the sdk
-    * If User is already logged in on the device, will set state to logged in
-* `requiresLogin()`
-    * True or False
-* `customize()`
-    * Customize the SDK
-* `defaults()`**\*\*New**
-    * Load to default state of SDK
-* `registerListener(PocketIDListener)`
-    * Registers a global event listener
-* `unregisterListener(PocketIDListener)`
-    * Unregisters the global event listener
-* `login(fragment/activity, defaultToRegister)`
-    * Manually triggers the Login Flow
-    * defaultToRegister will start with the registration screen instead of login screen
-* `buy(fragment/activity)`**\*\*New**
-    * Triggers the `buy` token flow
-* `send(fragment/activity)`**\*\*New**
-    * Triggers the `send` token flow
-* `logout(context)`
-    * Logs out the current user and clears the global session
-* `getUser()`
-    * Returns: user details
-* `fetchBalance()`**\*\*New**
-    * Load the balance response
-* `getBalance()`**\*\*New**
-    * returns `BalanceResponse`
-* `fetchTransactions()`**\*\*New**
-    * Load the transactions response
-* `getTransactions()`**\*\*New**
-    * returns `TransactionsResponse`
-
-<br>
-
-#### User
-
-Class represents the user's data.
-
-* `getFirstName()`
-    * User's first name
-* `getLastName()`
-    * User's last name
-* `getUsername()`
-    * User's username
-* `getCountryCode()`
-    * User's phone country code
-* `getPhoneNumber()`
-    * User's phone number
-* `getEmail()`
-    * User's email address
-    
-<br>
-
-#### PocketIDEventType (formerly EventType)
-
-Contains all the type that are sent to `PocketIDListener`
-
-* `EVENT_LOGIN_SUCCESS`
-* `EVENT_LOGIN_FAILED`
-* `EVENT_ACCOUNT_REGISTERED`
-* `EVENT_REGISTER_FAILED`
-* `EVENT_LOGGED_OUT`
-* `EVENT_GET_BALANCE_SUCCESS`**\*\*New**
-* `EVENT_GET_BALANCE_FAILED`**\*\*New**
-* `EVENT_SEND_SUCCESS`**\*\*New**
-* `EVENT_SEND_CANCELLED`**\*\*New**
-* `EVENT_BUY_SUCCESS`**\*\*New**
-* `EVENT_BUY_CANCELLED`**\*\*New**
-* `EVENT_GET_TRANSACTIONS_SUCCESS`**\*\*New**
-* `EVENT_GET_TRANSACTIONS_FAILED`**\*\*New**
-
-<br>
-
-#### PocketIDUiUtil
-
-SDK UI Utility class **\*\*New**
-
-* static `formatFiatString(amount)`
-    * formats a fiat currency string according to sdk settings
-* static `formatTokenString(amount)`
-    * formats a token string according to sdk settings
-    
-<br>
-
-#### BalanceResponse
-
-Class represents user's balance data **\*\*New**
-
-* `getDefaultWalletId()`
-    * Returns the id of the default wallet
-* `getDefaultWallet()`
-    * Returns the user's default `Wallet` object
-* `getAllWallets()`
-    * Returns all the user's `Wallet` accounts.
-    
-<br>
-
-#### TransactionsResponse
-
-Class represents user's transaction data **\*\*New**
-
-* `getTransactions()`
-    * Returns a list of `Transaction`
-    
-<br>
-
----
-##Coming Soon
-- The sdk will be hosted in Maven Repository<br/>
-- `DARK` theme support for `buy` and `send` flows
+### 4. Write to contract
+1. Encode smart contract method with parameters using [this API](/web#61-encode-smart-contract-method-with-parameters).
+2. (Optional) Estimate gas price for the encoded method using [gas estimate API](/web#62-estimate-gas-for-smart-contract-method).
+3. Call [send transaction contract API](/web#64-send-a-transaction-to-smart-contract) with encoded data provided by previous API.
