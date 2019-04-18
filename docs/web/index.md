@@ -23,8 +23,15 @@ Our API has predictable resource-oriented URLs, accepts [form-encoded](https://e
 
 !!! info "Note"
 
-    To learn about the order of APIs you should call for particular actions, please follow this guide. [Click here](/web#guide)
+    To learn about the order of APIs you should call for particular actions, please follow this guide. [Click here](/en/latest/web#guide)
 
+### Quick links:
+* [Auth](/en/latest/web/#1-auth)
+* [Reset Password](/en/latest/web/#2-reset-password)
+* [OTP](/en/latest/web/#3-send-otp)
+* [User](/en/latest/web/#4-user)
+* [Wallet](/en/latest/web/#5-wallet)
+* [Smart contract](/en/latest/web/#6-smart-contracts)
 
 ### 1. Auth
 
@@ -169,46 +176,6 @@ Refreshes access and refresh token using their existing refresh token.
     * `refresh_token` : Generated refresh token for user
     * `refresh_token_expires_in` : Refresh token's expiry in seconds
     * `client_id` : Client id used for generating tokens
-
-<br/>
-#### 1.4. Username availability
-
-##### Url: 
-`GET: /api/v1/users/username/{{username}}`
-
-##### Description: 
-Checks thr availability of username
-
-##### Example request:
-    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/users/username/{{username} \
-        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)'
-
-###### Request params:
-* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
-* `username` (path): <i>(Required)</i> Username to check availability for
-
-##### Example response:
-Status code 200:
-```
-    {
-        "message": "username is available",
-        "errors": [],
-        "data": null
-    }
-```
-Status code 400:
-```
-    {
-        "message": "username is occupied",
-        "errors": [],
-        "data": null
-    }
-```
-
-###### Response params:
-* `message` : <i>(String)</i> 
-* `errors` : <i>(Array)</i>
-* `data` : <i>null</i>
 
 ---
 ### 2. Reset Password
@@ -524,9 +491,49 @@ Update password using old password and access token
 * `errors` : <i>(Array)</i>
 * `data` : <i>null</i>
 
+<br/>
+#### 4.5. Username availability
+
+##### Url: 
+`GET: /api/v1/users/username/{{username}}`
+
+##### Description: 
+Checks thr availability of username
+
+##### Example request:
+    curl -X GET https://pocket-id-backend.herokuapp.com/api/v1/users/username/{{username} \
+        -H 'AppId: nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)'
+
+###### Request params:
+* `AppId` (header): <i>(Required)</i> Your AppId provided by PocketID
+* `username` (path): <i>(Required)</i> Username to check availability for
+
+##### Example response:
+Status code 200:
+```
+    {
+        "message": "username is available",
+        "errors": [],
+        "data": null
+    }
+```
+Status code 400:
+```
+    {
+        "message": "username is occupied",
+        "errors": [],
+        "data": null
+    }
+```
+
+###### Response params:
+* `message` : <i>(String)</i> 
+* `errors` : <i>(Array)</i>
+* `data` : <i>null</i>
+
 
 <br/>
-#### 4.5. Logout user
+#### 4.6. Logout user
 
 ##### Url: 
 `POST: /api/v1/me/logout`
@@ -973,19 +980,19 @@ Send a transaction to the smart contract. Note this can alter the smart contract
 ## Guide
 
 ### 1. Register user
-1. (Optional) Check for username availability using [username availablility api](/web#14-user-availability)
-2. Send an OTP to this user's phone number using <i>[Send OTP using phone number API](/web#31-send-otp-using-phone-number)</i>. <br/>
+1. (Optional) Check for username availability using [username availablility api](/en/latest/web#45-username-availability)
+2. Send an OTP to this user's phone number using <i>[Send OTP using phone number API](/en/latest/web#31-send-otp-using-phone-number)</i>. <br/>
 Note: `new_user` parameter should be `1` while calling this API.
-3. Call [register API](/web#11-register-a-new-user) with all the params including OTP sent to user's phone number
+3. Call [register API](/en/latest/web#11-register-a-new-user) with all the params including OTP sent to user's phone number
 
 ### 2. Login user
-1. Call [login API](/web#12-login-user) with all the required parameters
+1. Call [login API](/en/latest/web#12-login-user) with all the required parameters
 
 ### 3. Read from contract
-1. Encode smart contract method with parameters using [this API](/web#61-encode-smart-contract-method-with-parameters).
-2. Call [read from contract API](/web#63-read-from-smart-contract) with encoded data provided by previous API.
+1. Encode smart contract method with parameters using [this API](/en/latest/web#61-encode-smart-contract-method-with-parameters).
+2. Call [read from contract API](/en/latest/web#63-read-from-smart-contract) with encoded data provided by previous API.
 
 ### 4. Write to contract
-1. Encode smart contract method with parameters using [this API](/web#61-encode-smart-contract-method-with-parameters).
-2. (Optional) Estimate gas price for the encoded method using [gas estimate API](/web#62-estimate-gas-for-smart-contract-method).
-3. Call [send transaction contract API](/web#64-send-a-transaction-to-smart-contract) with encoded data provided by previous API.
+1. Encode smart contract method with parameters using [this API](/en/latest/web#61-encode-smart-contract-method-with-parameters).
+2. (Optional) Estimate gas price for the encoded method using [gas estimate API](/en/latest/web#62-estimate-gas-for-smart-contract-method).
+3. Call [send transaction contract API](/en/latest/web#64-send-a-transaction-to-smart-contract) with encoded data provided by previous API.
