@@ -36,20 +36,30 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
         }    
 
 1. Sync your project with gradle
+
+
+!!! info "Note"
+
+    If the above steps don't work for your project, follow the alternate [approach](https://developer.android.com/studio/projects/android-library#AddDependency) on how to import `.aar` files.
+
 <br>
 
-> If the above steps don't work for your project, follow the alternate [approach](https://developer.android.com/studio/projects/android-library#AddDependency) on how to import `.aar` files.
+---
+
+##Quick Links
+* [Initialization](#initialization)
+* [Basic Guide](#basic-guide)
+* [Extended Guide](#extended-guide)
+* [Smart Contracts](#smart-contracts)
+* [Reference](#reference)
 
 ---
+
 ##Initialization
 
 PocketID requires this mandatory step in order to initialize the sdk before any of its features to be consumed. 
 You will find the class `PocketIDSdk` is the main source of your interaction with the sdk. 
 To initialize the SDK, you’ll need to call `PocketIDSdk.getInstance().initialize()` in your application startup and pass in your `AppID`.
-
-> In development environment use this sample AppID:<br>
-> `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br>
-> For production, please contact us to generate a prod AppID
 
 ```java
 public class TestdApp extends Application {
@@ -62,6 +72,13 @@ public class TestdApp extends Application {
 }
 
 ```
+
+!!! info "Note"
+
+    In development environment use this sample `AppID`:<br>
+    `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br>
+    For production, please contact us to generate a prod `AppID`
+
 <br>
 
 ---
@@ -163,8 +180,10 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 PocketID provides the necessary interface to interact with Smart Contracts through the sdk. Please refer
 to this [document](https://learn.aion.network/docs/what-is-a-smart-contract) for more info.
 
-> All of the api in this section will broadcast the success/failure event along with extra data. 
-Check [Events](#events) on how to handle the response.
+!!! info "Note"
+
+    All of the api in this section will broadcast the success/failure event along with extra data. 
+    Refer to the [Events](#events) section on how to handle the responses.
 
 <br>
 
@@ -202,7 +221,7 @@ public void onCreate(Bundle savedInstanceState) {
 ```
 
 - the `method` name must be defined in the `abi` otherwise will result in error<br>
-- provide `params` as necessary (varargs) as defined in the `abi`<br>
+- provide optional `params` as necessary (varargs) as defined in the `abi`<br>
 
 The SDK will broadcast the following events:
 
@@ -213,9 +232,10 @@ The SDK will broadcast the following events:
 use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
 
 
-###Step 3.1: Write
+###Step 3: Gas Estimate
 
-Now submit a `send` request using the `encoded-data` from [Step 1](#step-2-encode) to execute the method.
+This request can be used to get an estimate of the `gasAmount` that can be used as the optional
+parameter of the [send](#step-42-write) request.
 
 ```java 
 
@@ -224,30 +244,25 @@ public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     PocketIDSdk.getInstance()
         .getContractHandler()
-        .send(this, encodedData); 
+        .gasEstimate(this, encodedData);
 }
 
 ```
 
-The optional parameters of `gasPriceAion` and `gas` can be passed for convenience.
-Otherwise the following are the default values for network resources:
-
-> `gasPriceAion` = `0.00000001` (10 Amp) <br>
-> `gas` = 50000 <br>
-
 The SDK will broadcast the following events:
 
-* `EVENT_TR_SEND_SUCCESS`
-* `EVENT_TR_SEND_FAILED`
+* `EVENT_TR_GAS_ESTIMATE_SUCCESS`
+* `EVENT_TR_GAS_ESTIMATE_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_TRANSACTION_HASH` to get the `transaction-hash` or
+> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (int) or
 use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
 
 
-###Step 3.2: Read
 
-This request is used to read a smart contract and return the result.
-Before using the request, get the `encodedData` from [Step 1](#step-2-encode)
+###Step 4.1: Read
+
+Use this request to read a smart contract and get the result string.
+Before using the request, get the `encodedData` from [Step 2](#step-2-encode).
 
 ```java 
 
@@ -271,10 +286,11 @@ The SDK will broadcast the following events:
 > Use `PocketIDArgumentKey.KEY_DATA_STRING` to get the result string or
 use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
 
-###Gas Estimate Request
 
-This is a convenience request to get an estimate of the `gasAmount` that can be used as the optional
-parameter of the [send](#step-31-write) request.
+###Step 4.2: Write
+
+Now submit a `send` request using the `encoded-data` 
+from [Step 2](#step-2-encode) to execute the method.
 
 ```java 
 
@@ -283,18 +299,30 @@ public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     PocketIDSdk.getInstance()
         .getContractHandler()
-        .gasEstimate(this, encodedData);
+        .send(this, encodedData); 
+    // or
+    PocketIDSdk.getInstance()
+        .getContractHandler()
+        .send(this, encodedData, gasPriceAion, gas); 
 }
 
 ```
 
+> The optional parameters of `gasPriceAion` and `gas` can be passed for convenience.
+
+!!! info "Default Network Resources"
+    
+    `gasPriceAion` = `0.00000001` (10 Amp) <br>
+    `gas` = 50000 <br>
+
 The SDK will broadcast the following events:
 
-* `EVENT_TR_GAS_ESTIMATE_SUCCESS`
-* `EVENT_TR_GAS_ESTIMATE_FAILED`
+* `EVENT_TR_SEND_SUCCESS`
+* `EVENT_TR_SEND_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (int) or
+> Use `PocketIDArgumentKey.KEY_TRANSACTION_HASH` to get the `transaction-hash` or
 use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+
 
 <br>
 
@@ -354,7 +382,7 @@ public class MyActivity extends Activity {
 }
 ```
 
-Pass `true` for `defaultToRegister` if you want the initial screen to default to the `Register` flow instead of the `Login` flow.
+ > Pass `true` for `defaultToRegister` if you want the initial screen to default to the `Register` flow instead of the `Login` flow.
 
 <br>
 
