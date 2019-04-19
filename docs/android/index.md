@@ -254,7 +254,7 @@ The SDK will broadcast the following events:
 * `EVENT_TR_GAS_ESTIMATE_SUCCESS`
 * `EVENT_TR_GAS_ESTIMATE_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (int) or
+> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (double) or
 use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
 
 
