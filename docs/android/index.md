@@ -52,6 +52,7 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
 * [Extended Guide](#extended-guide)
 * [Smart Contracts](#smart-contracts)
 * [Reference](#reference)
+* [Sample App](https://github.com/Serind/PocketID/tree/master/samples/AndroidSample)
 
 ---
 
@@ -180,6 +181,9 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 PocketID provides the necessary interface to interact with Smart Contracts through the sdk. Please refer
 to this [document](https://learn.aion.network/docs/what-is-a-smart-contract) for more info.
 
+> See the [Sample App](https://github.com/Serind/PocketID/tree/master/samples/AndroidSample) for a basic example 
+implementation of Smart Contracts.
+
 !!! info "Note"
 
     All of the api in this section will broadcast the success/failure event along with extra data. 
@@ -228,8 +232,11 @@ The SDK will broadcast the following events:
 * `EVENT_TR_ENCODE_SUCCESS`
 * `EVENT_TR_ENCODE_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_ENCODED_DATA` to get the `encoded` call or
-use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+The event bundle will contain the following data:
+
+* `PocketIDArgumentKey.KEY_ENCODED_DATA`
+* `PocketIDArgumentKey.KEY_METHOD_NAME`
+* `PocketIDArgumentKey.KEY_FAIL_MESSAGE`
 
 
 ###Step 3: Gas Estimate
@@ -254,8 +261,11 @@ The SDK will broadcast the following events:
 * `EVENT_TR_GAS_ESTIMATE_SUCCESS`
 * `EVENT_TR_GAS_ESTIMATE_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_GAS_ESTIMATE` to get the estimate (double) or
-use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+The event bundle will contain the following data:
+
+* `PocketIDArgumentKey.KEY_GAS_ESTIMATE` (double)
+* `PocketIDArgumentKey.KEY_ENCODED_DATA`
+* `PocketIDArgumentKey.KEY_FAIL_MESSAGE`
 
 
 
@@ -283,8 +293,11 @@ The SDK will broadcast the following events:
 * `EVENT_TR_CALL_SUCCESS`
 * `EVENT_TR_CALL_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_DATA_STRING` to get the result string or
-use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+The event bundle will contain the following data:
+
+* `PocketIDArgumentKey.KEY_DATA_STRING`
+* `PocketIDArgumentKey.KEY_ENCODED_DATA`
+* `PocketIDArgumentKey.KEY_FAIL_MESSAGE`
 
 
 ###Step 4.2: Write
@@ -320,8 +333,11 @@ The SDK will broadcast the following events:
 * `EVENT_TR_SEND_SUCCESS`
 * `EVENT_TR_SEND_FAILED`
 
-> Use `PocketIDArgumentKey.KEY_TRANSACTION_HASH` to get the `transaction-hash` or
-use `PocketIDArgumentKey.KEY_FAIL_MESSAGE` to get failure message.<br>
+The event bundle will contain the following data:
+
+* `PocketIDArgumentKey.KEY_TRANSACTION_HASH`
+* `PocketIDArgumentKey.KEY_ENCODED_DATA`
+* `PocketIDArgumentKey.KEY_FAIL_MESSAGE`
 
 
 <br>
