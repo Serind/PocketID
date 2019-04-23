@@ -94,7 +94,7 @@ In addition, PocketID SDK will allow (d)Apps to make crypto transactions. Logged
 
 ###Login
 
-Add the `PocketIDButton` to your activity's layout file.
+Add the `PocketIDButton` to your activity or fragment layout file.
 ```xml 
 <com.serindlabs.pocketid.sdk.widget.PocketIDButton
     android:id="@+id/btnLogin" 
@@ -102,7 +102,7 @@ Add the `PocketIDButton` to your activity's layout file.
     android:layout_height="wrap_content" />
 ```
 
-Override `onActivityResult()` in your activity and handle the successfully logged-in user.
+Override `onActivityResult()` in your activity or fragment and handle the successfully logged-in user.
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -113,7 +113,8 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
     }
 }
 ```
-> `PocketIDSdk.getInstance().requiresLogin()` can be used to show or hide the login button</br>
+> `PocketIDSdk.getInstance().requiresLogin()` can be used to show or hide the login button.</br>
+> Call `btnLogin.initWithFragment(this)` if the button is used inside of a fragment.</br>
 
 > Prerequisites:</br>
 > - [Getting Started](#getting-started)</br>
@@ -399,8 +400,9 @@ public class MyActivity extends Activity {
 }
 ```
 
- > Pass `true` for `defaultToRegister` if you want the initial screen to default to the `Register` flow instead of the `Login` flow.
-
+ > Pass `true` for `defaultToRegister` if you want the initial screen to default to the `Register` flow instead of the `Login` flow.<br>
+ > `login()` supports both activity or a fragment as the context. Pass appropriate one in order to get `onActivityResult()` callback correctly.</br>
+ 
 <br>
 
 **Handling Result**
