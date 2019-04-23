@@ -11,6 +11,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         PocketIDSdk.getInstance()
+                .setInProd(false)
                 .initialize(this, "nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)");
         PocketIDSdk.getInstance()
                 .customize()
