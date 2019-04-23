@@ -4,7 +4,7 @@ Android -> v1.0
 ---
 ##Getting Started
 
-Start by downloading the client [SDK](https://github.com/Serind/pocketid-doc/releases/tag/v1.0) `.aar` file.
+Start by downloading the client [SDK](https://github.com/Serind/PocketID/releases/tag/v1.0-android-release) `.aar` file.
 
 Once you have the client SDK, you’re ready to integrate it with your (d)App.
 
@@ -79,8 +79,8 @@ public class TestdApp extends Application {
 
     In development environment use this sample `AppID`:<br>
     `nh(DyBAlOlVWugK_ezmqN!qEHBiKYVF)`<br>
-    For production, please contact us to generate a prod `AppID`
-
+    For [Production](#production), please contact us to generate a prod `AppID`.
+    
 <br>
 
 ---
