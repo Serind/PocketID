@@ -1,8 +1,10 @@
 package com.serindlabs.androidsample;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +14,7 @@ import com.serindlabs.pocketid.sdk.PocketIDSdk;
 import com.serindlabs.pocketid.sdk.base.PocketIDListener;
 import com.serindlabs.pocketid.sdk.constants.PocketIDArgumentKey;
 import com.serindlabs.pocketid.sdk.constants.PocketIDEventType;
+import com.serindlabs.pocketid.sdk.constants.PocketIDRequestCode;
 import com.serindlabs.pocketid.sdk.contract.ContractHandler;
 import com.serindlabs.pocketid.sdk.domain.account.BalanceResponse;
 import com.serindlabs.pocketid.sdk.utils.PocketIDUiUtil;
@@ -109,13 +112,19 @@ public class MainActivity extends AppCompatActivity implements PocketIDListener 
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == PocketIDRequestCode.AUTHENTICATION && resultCode == RESULT_OK) {
+            setUiState();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     public void onEvent(String s, Bundle bundle) {
         switch (s) {
             case PocketIDEventType.EVENT_LOGGED_OUT:
                 onLoggedOut();
-                break;
-            case PocketIDEventType.EVENT_LOGIN_SUCCESS:
-                setUiState();
                 break;
             case PocketIDEventType.EVENT_GET_BALANCE_SUCCESS:
                 updateBalance(PocketIDSdk.getInstance().getBalance());

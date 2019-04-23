@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Headline4"
@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
