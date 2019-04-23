@@ -1,0 +1,68 @@
+-dontwarn org.jetbrains.annotations.**
+
+# Retrofit
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn retrofit2.KotlinExtensions
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface <1>
+
+# OkHttp
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# Gson
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn sun.misc.**
+-keep class com.google.gson.examples.android.model.** { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Kotlin
+-dontwarn kotlin.**
+
+# Stripe
+-keep class com.stripe.android.** { *; }
+
+# Country Code Picker
+-keep class com.hbb20.** { *; }
+
+# Fast Scroller
+-keep class com.futuremind.recyclerviewfastscroll.** { *; }
+
+# Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+-dontwarn com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
+-dontwarn com.bumptech.glide.load.resource.bitmap.Downsampler
+-dontwarn com.bumptech.glide.load.resource.bitmap.HardwareConfigState
+#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+
+# PocketID SDK
+-keep class com.serindlabs.pocketid.sdk.PocketIDSdk {
+    public <methods>;
+    public static *** getInstance();
+}
+-keep class com.serindlabs.pocketid.sdk.Customize { *; }
+-keep class com.serindlabs.pocketid.sdk.widget.** { *; }
+-keep class com.serindlabs.pocketid.sdk.domain.** { *; }
+-keep class com.serindlabs.pocketid.sdk.utils.PocketIDUiUtil { *; }
+-keep class com.serindlabs.pocketid.sdk.constants.** { *; }
+-keep class com.serindlabs.pocketid.sdk.common.User { *; }
+-keep class com.serindlabs.pocketid.sdk.contract.ContractHandler { *; }
+-keep interface com.serindlabs.pocketid.sdk.base.PocketIDListener { *; }

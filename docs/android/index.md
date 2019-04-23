@@ -51,6 +51,7 @@ Once you have the client SDK, you’re ready to integrate it with your (d)App.
 * [Basic Guide](#basic-guide)
 * [Extended Guide](#extended-guide)
 * [Smart Contracts](#smart-contracts)
+* [Production Ready](#production)
 * [Reference](#reference)
 * [Sample App](https://github.com/Serind/PocketID/tree/master/samples/AndroidSample)
 
@@ -619,6 +620,55 @@ public class TestdApp extends Application {
 <br>
 
 ---
+###Production
+
+The process to make the use of the sdk production-ready is quite simple. Regardless of what phase of
+development your (d)App is in, simply do the following during the initialization of the sdk:
+
+```java
+public class TestdApp extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PocketIDSdk.getInstance().setInProd(true/false);
+        PocketIDSdk.getInstance().initialize(this, "my-app-id");
+    }
+}
+```
+
+!!! info "Important"
+
+    Notice: Make sure that `setInProd()` is called prior to `initialize()`.
+
+<br>
+
+---
+###Proguard
+
+The following is the proguard rules for the sdk if your (d)App enabled Proguard.
+
+```
+-keep class com.serindlabs.pocketid.sdk.PocketIDSdk {
+    public <methods>;
+    public static *** getInstance();
+}
+-keep class com.serindlabs.pocketid.sdk.Customize { *; }
+-keep class com.serindlabs.pocketid.sdk.widget.** { *; }
+-keep class com.serindlabs.pocketid.sdk.domain.** { *; }
+-keep class com.serindlabs.pocketid.sdk.utils.PocketIDUiUtil { *; }
+-keep class com.serindlabs.pocketid.sdk.constants.** { *; }
+-keep class com.serindlabs.pocketid.sdk.common.User { *; }
+-keep class com.serindlabs.pocketid.sdk.contract.ContractHandler { *; }
+-keep interface com.serindlabs.pocketid.sdk.base.PocketIDListener { *; }
+```
+
+> As the sdk relies on many other libraries, please refer to each library for their specific and up-to-date
+> rules. However for quick resolution, [this](../assets/latest-full-proguard.txt) may be all you'll need.
+
+<br>
+
+---
 ##Reference
 
 <br>
@@ -665,7 +715,9 @@ Contains the supported Theme Constants
 
 Main interactions with the sdk is through this class. Used as Singleton.
 
-* `initialize()`
+* `setInProd(true/false)`**\*\*New**
+    * Sets the state of the sdk to production if true, otherwise defaults to development
+* `initialize(appid)`
     * Validates the state of the sdk
     * If User is already logged in on the device, will set state to logged in
 * `requiresLogin()`
