@@ -1,4 +1,5 @@
-# Version: v1
+##Version
+Web -> v1.0
 
 ---
 ## Getting Started
@@ -996,3 +997,5 @@ Note: `new_user` parameter should be `1` while calling this API.
 1. Encode smart contract method with parameters using [this API](/en/latest/web#61-encode-smart-contract-method-with-parameters).
 2. (Optional) Estimate gas price for the encoded method using [gas estimate API](/en/latest/web#62-estimate-gas-for-smart-contract-method).
 3. Call [send transaction contract API](/en/latest/web#64-send-a-transaction-to-smart-contract) with encoded data provided by previous API.
+
+<br>
